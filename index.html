@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>KriBekHUB v2.0 — Ethical Hacking Toolkit</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 <style>
@@ -12,18 +13,19 @@
   --void:#060609;
   --void-2:#0b0b13;
   --surface:#10101a;
-  --surface-2:#16162280;
-  --line:rgba(192,255,0,.12);
+  --surface-2:rgba(22,22,34,0.5);
+  --line:rgba(192,255,0,0.12);
+  --line-strong:rgba(192,255,0,0.28);
   --lime:#c8ff1e;
-  --lime-soft:rgba(200,255,30,.15);
+  --lime-soft:rgba(200,255,30,0.15);
   --magenta:#ff2d75;
   --cyan:#27e0ff;
-  --amber:#ffb000;
   --text:#e8e8f0;
   --muted:#7d7d92;
   --radius:14px;
-  --glow-lime:0 0 24px rgba(200,255,30,.45);
-  --glow-magenta:0 0 24px rgba(255,45,117,.45);
+  --glow-lime:0 0 20px rgba(200,255,30,0.4);
+  --ease-out:cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring:cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 *{margin:0;padding:0;box-sizing:border-box}
@@ -36,483 +38,310 @@ body{
   overflow-x:hidden;
   cursor:none;
 }
-
-/* === Custom Scrollbar === */
-::-webkit-scrollbar{width:10px}
+::-webkit-scrollbar{width:6px}
 ::-webkit-scrollbar-track{background:var(--void)}
-::-webkit-scrollbar-thumb{background:linear-gradient(var(--lime),var(--magenta));border-radius:10px}
+::-webkit-scrollbar-thumb{background:var(--lime);border-radius:6px}
 
-/* === Boot Loader === */
-#boot{
-  position:fixed;inset:0;background:var(--void);z-index:9999;
-  display:flex;flex-direction:column;justify-content:center;align-items:center;
-  font-family:'JetBrains Mono',monospace;color:var(--lime);
-  transition:opacity .6s ease, visibility .6s ease;
-}
-#boot.done{opacity:0;visibility:hidden}
-.boot-logo{
-  font-family:'Chakra Petch',sans-serif;font-weight:700;
-  font-size:clamp(2rem,6vw,4rem);letter-spacing:.2em;
-  text-shadow:var(--glow-lime);margin-bottom:2rem;
-}
-.boot-log{
-  width:min(560px,90vw);height:160px;font-size:.8rem;
-  color:var(--lime);opacity:.85;overflow:hidden;
-  border:1px solid var(--line);padding:1rem;border-radius:8px;
-  background:rgba(0,0,0,.4);
-}
-.boot-log .ln{opacity:0;animation:typeIn .15s forwards}
-.boot-log .ln::before{content:"> ";color:var(--magenta)}
-@keyframes typeIn{to{opacity:1}}
-.boot-bar{
-  width:min(560px,90vw);height:3px;background:rgba(255,255,255,.06);
-  margin-top:1.5rem;border-radius:3px;overflow:hidden;
-}
-.boot-bar i{display:block;height:100%;width:0;
-  background:linear-gradient(90deg,var(--lime),var(--magenta));
-  animation:bootFill 2.6s ease forwards;
-}
-@keyframes bootFill{to{width:100%}}
+/* === Instant Custom Cursor === */
+.cur,.cur-dot{position:fixed;top:0;left:0;pointer-events:none;z-index:9998;border-radius:50%;mix-blend-mode:screen;will-change:transform}
+.cur{width:32px;height:32px;border:1px solid var(--lime);transition:width 0.2s, height 0.2s, border-color 0.2s, background 0.2s}
+.cur-dot{width:6px;height:6px;background:var(--lime);box-shadow:var(--glow-lime)}
+.cur.hover{width:48px;height:48px;border-color:var(--magenta);background:rgba(255,45,117,.08)}
 
-/* === Custom Cursor === */
-.cur,.cur-dot{position:fixed;top:0;left:0;pointer-events:none;z-index:9998;
-  border-radius:50%;mix-blend-mode:screen}
-.cur{width:36px;height:36px;border:1px solid var(--lime);
-  transform:translate(-50%,-50%);transition:transform .12s ease,width .2s,height .2s}
-.cur-dot{width:6px;height:6px;background:var(--lime);
-  transform:translate(-50%,-50%);box-shadow:var(--glow-lime)}
-.cur.hover{width:64px;height:64px;border-color:var(--magenta);background:rgba(255,45,117,.08)}
-
-/* === Matrix Canvas === */
-#matrix{position:fixed;inset:0;z-index:-2;opacity:.45}
+/* === Backgrounds === */
+#matrix{position:fixed;inset:0;z-index:-2;opacity:.35;will-change:transform}
 #grid-bg{position:fixed;inset:0;z-index:-3;
   background-image:
     linear-gradient(rgba(200,255,30,.04) 1px,transparent 1px),
     linear-gradient(90deg,rgba(200,255,30,.04) 1px,transparent 1px);
   background-size:50px 50px;
-  mask-image:radial-gradient(ellipse at center,#000 30%,transparent 75%);
-}
+  mask-image:radial-gradient(ellipse at center,#000 30%,transparent 75%)}
 .scanlines{position:fixed;inset:0;z-index:-1;pointer-events:none;
-  background:repeating-linear-gradient(0deg,
-    rgba(0,0,0,0) 0px,rgba(0,0,0,0) 2px,
-    rgba(0,0,0,.18) 3px,rgba(0,0,0,0) 4px);
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0) 2px,rgba(0,0,0,.18) 3px,rgba(0,0,0,0) 4px);
   opacity:.4;mix-blend-mode:overlay}
 .vignette{position:fixed;inset:0;z-index:-1;pointer-events:none;
   background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,.6) 100%)}
 
-/* === Header === */
-header{
-  position:fixed;top:0;width:100%;z-index:1000;
-  display:flex;justify-content:space-between;align-items:center;
-  padding:1rem clamp(1.2rem,4vw,3rem);
-  background:rgba(6,6,9,.6);backdrop-filter:blur(18px) saturate(140%);
-  border-bottom:1px solid var(--line);
+/* === Dynamic Island Nav === */
+.island-wrap{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:1000;will-change:transform}
+.island{
+  position:relative;width:220px;height:48px;
+  background:rgba(8,8,14,.9);backdrop-filter:blur(20px) saturate(180%);
+  border:1px solid var(--line);border-radius:30px;
+  display:flex;align-items:center;padding:0 12px;
+  transition:width 0.3s var(--ease-out), height 0.3s var(--ease-out), border-color 0.2s;
+  box-shadow:0 10px 30px rgba(0,0,0,.6);
+  overflow:hidden;cursor:none;
 }
-.logo{display:flex;align-items:center;gap:.7rem;text-decoration:none}
-.logo-mark{
-  width:38px;height:38px;display:grid;place-items:center;
-  border:1px solid var(--lime);border-radius:8px;
-  background:linear-gradient(135deg,rgba(200,255,30,.1),transparent);
-  position:relative;overflow:hidden;
-}
-.logo-mark::before{content:"";position:absolute;inset:-50%;
-  background:conic-gradient(from 0deg,transparent,var(--lime),transparent 30%);
-  animation:spin 4s linear infinite}
-.logo-mark::after{content:"K";position:relative;
-  font-family:'Chakra Petch';font-weight:700;color:var(--lime);
-  background:var(--void);width:30px;height:30px;display:grid;place-items:center;border-radius:6px}
-@keyframes spin{to{transform:rotate(360deg)}}
-.logo-text{
-  font-family:'Chakra Petch',sans-serif;font-weight:700;
-  font-size:1.25rem;letter-spacing:.18em;color:var(--text);
-}
-.logo-text b{color:var(--lime)}
-.logo-pulse{width:8px;height:8px;border-radius:50%;background:var(--lime);
-  box-shadow:var(--glow-lime);animation:pulse 1.6s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-
-nav{display:flex;gap:.3rem;align-items:center}
-nav a{
-  position:relative;color:var(--muted);text-decoration:none;
-  font-weight:500;font-size:.9rem;letter-spacing:.05em;
-  padding:.55rem 1rem;border-radius:6px;transition:color .2s;
-  font-family:'JetBrains Mono',monospace;
-}
-nav a:hover,nav a.active{color:var(--lime)}
-nav a::before{content:"";position:absolute;left:50%;bottom:4px;
-  width:0;height:1px;background:var(--lime);transition:width .25s,left .25s}
-nav a:hover::before,nav a.active::before{width:60%;left:20%}
-
-.nav-cta{
-  padding:.55rem 1rem;border:1px solid var(--lime);color:var(--lime);
-  border-radius:6px;text-decoration:none;font-size:.85rem;
-  font-family:'JetBrains Mono';letter-spacing:.05em;
-  transition:all .2s;background:rgba(200,255,30,.05);
-}
-.nav-cta:hover{background:var(--lime);color:var(--void);box-shadow:var(--glow-lime)}
-
-.menu-btn{display:none;background:none;border:none;color:var(--lime);font-size:1.4rem;cursor:none}
+.island:hover{width:min(680px,92vw);height:56px;border-color:var(--line-strong)}
+.island-left{display:flex;align-items:center;gap:.6rem;flex-shrink:0}
+.island-logo{display:flex;align-items:center;gap:.55rem;text-decoration:none;color:var(--text)}
+.logo-mark{width:30px;height:30px;display:grid;place-items:center;border-radius:8px;background:linear-gradient(135deg,var(--lime),var(--cyan));font-family:'Chakra Petch';font-weight:700;color:var(--void);font-size:.9rem;box-shadow:0 0 16px rgba(200,255,30,.4)}
+.logo-text{font-family:'Chakra Petch';font-weight:700;font-size:.95rem;letter-spacing:.15em;color:var(--text);white-space:nowrap;max-width:0;overflow:hidden;transition:max-width 0.3s var(--ease-out),opacity 0.2s;opacity:0}
+.island:hover .logo-text{max-width:120px;opacity:1}
+.island-center{display:flex;gap:2px;flex:1;justify-content:center;align-items:center;opacity:0;pointer-events:none;transition:opacity 0.2s var(--ease-out)}
+.island:hover .island-center{opacity:1;pointer-events:auto}
+.island-link{color:var(--muted);text-decoration:none;font-size:.75rem;font-family:'JetBrains Mono';padding:.4rem .75rem;border-radius:6px;transition:color 0.2s}
+.island-link:hover,.island-link.active{color:var(--lime)}
+.island-right{display:flex;align-items:center;gap:.5rem;flex-shrink:0;margin-left:auto}
+.island-status{display:flex;align-items:center;gap:.4rem;padding:.3rem .55rem;border-radius:50px;background:rgba(200,255,30,.08);border:1px solid var(--line)}
+.island-status .pulse{width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:var(--glow-lime);animation:pulse 1.6s infinite}
+.island-status .txt{font-family:'JetBrains Mono';font-size:.65rem;color:var(--lime);letter-spacing:.08em}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+.island-cta{width:30px;height:30px;display:grid;place-items:center;border-radius:8px;background:var(--lime);color:var(--void);text-decoration:none;font-size:.8rem;transition:all 0.2s}
+.island-cta:hover{transform:scale(1.08);box-shadow:0 0 20px rgba(200,255,30,.7)}
+.island-eq{display:flex;gap:3px;align-items:center;height:18px;margin-left:auto}
+.island-eq span{width:3px;background:var(--lime);border-radius:2px;animation:eq .9s ease-in-out infinite}
+.island-eq span:nth-child(1){animation-delay:0s;height:40%}
+.island-eq span:nth-child(2){animation-delay:.15s;height:80%}
+.island-eq span:nth-child(3){animation-delay:.3s;height:50%}
+.island-eq span:nth-child(4){animation-delay:.45s;height:90%}
+@keyframes eq{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1)}}
+.island:hover .island-eq{display:none}
+.island-progress{position:absolute;bottom:0;left:8%;height:2px;width:0;background:linear-gradient(90deg,var(--lime),var(--magenta));border-radius:2px;opacity:.8}
+.island-toggle{display:none;background:none;border:none;color:var(--lime);font-size:1rem;cursor:none;padding:.4rem}
 
 /* === Hero === */
-.hero{
-  min-height:100vh;display:grid;grid-template-columns:1.1fr .9fr;
-  gap:3rem;align-items:center;padding:8rem clamp(1.2rem,4vw,3rem) 4rem;
-  position:relative;
-}
-.hero-tag{
-  display:inline-flex;align-items:center;gap:.5rem;
-  padding:.4rem .9rem;border:1px solid var(--line);
-  border-radius:50px;background:rgba(200,255,30,.04);
-  font-family:'JetBrains Mono';font-size:.75rem;color:var(--lime);
-  letter-spacing:.1em;margin-bottom:1.5rem;
-}
-.hero-tag .dot{width:6px;height:6px;border-radius:50%;
-  background:var(--lime);box-shadow:var(--glow-lime);animation:pulse 1.6s infinite}
-
-.hero h1{
-  font-family:'Chakra Petch',sans-serif;
-  font-size:clamp(2.5rem,6vw,4.8rem);font-weight:700;
-  line-height:1.05;letter-spacing:-.01em;margin-bottom:1.2rem;
-}
+.hero{min-height:100vh;display:grid;grid-template-columns:1.1fr .9fr;gap:3rem;align-items:center;padding:8rem clamp(1.2rem,4vw,3rem) 4rem;position:relative}
+.hero-tag{display:inline-flex;align-items:center;gap:.5rem;padding:.4rem .9rem;border:1px solid var(--line);border-radius:50px;background:rgba(200,255,30,.04);font-family:'JetBrains Mono';font-size:.72rem;color:var(--lime);letter-spacing:.1em;margin-bottom:1.5rem}
+.hero-tag .dot{width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:var(--glow-lime);animation:pulse 1.6s infinite}
+.hero h1{font-family:'Chakra Petch',sans-serif;font-size:clamp(2.2rem,5.5vw,4.2rem);font-weight:700;line-height:1.05;letter-spacing:-.01em;margin-bottom:1.2rem}
 .glitch{position:relative;color:var(--text);display:inline-block}
-.glitch::before,.glitch::after{
-  content:attr(data-text);position:absolute;top:0;left:0;
-  width:100%;height:100%;overflow:hidden;
-}
-.glitch::before{color:var(--magenta);
-  clip-path:polygon(0 0,100% 0,100% 45%,0 45%);
-  animation:glitchTop 3s infinite linear alternate-reverse}
-.glitch::after{color:var(--cyan);
-  clip-path:polygon(0 55%,100% 55%,100% 100%,0 100%);
-  animation:glitchBot 2s infinite linear alternate-reverse}
-@keyframes glitchTop{
-  0%,90%,100%{transform:translate(0)}92%{transform:translate(-3px,-1px)}
-  94%{transform:translate(3px,1px)}96%{transform:translate(-2px,1px)}}
-@keyframes glitchBot{
-  0%,90%,100%{transform:translate(0)}93%{transform:translate(3px,1px)}
-  95%{transform:translate(-3px,-1px)}97%{transform:translate(2px,-1px)}}
-
+.glitch::before,.glitch::after{content:attr(data-text);position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden}
+.glitch::before{color:var(--magenta);clip-path:polygon(0 0,100% 0,100% 45%,0 45%);animation:glitchTop 3s infinite linear alternate-reverse}
+.glitch::after{color:var(--cyan);clip-path:polygon(0 55%,100% 55%,100% 100%,0 100%);animation:glitchBot 2s infinite linear alternate-reverse}
+@keyframes glitchTop{0%,90%,100%{transform:translate(0)}92%{transform:translate(-3px,-1px)}94%{transform:translate(3px,1px)}96%{transform:translate(-2px,1px)}}
+@keyframes glitchBot{0%,90%,100%{transform:translate(0)}93%{transform:translate(3px,1px)}95%{transform:translate(-3px,-1px)}97%{transform:translate(2px,-1px)}}
 .hero h1 .v{color:var(--lime);text-shadow:var(--glow-lime)}
-.hero p.lead{font-size:1.1rem;color:var(--muted);max-width:540px;margin-bottom:2rem}
+.hero p.lead{font-size:1.05rem;color:var(--muted);max-width:540px;margin-bottom:2rem}
 .hero p.lead b{color:var(--text);font-weight:500}
-
 .hero-cta{display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:2.5rem}
-.btn{
-  display:inline-flex;align-items:center;gap:.6rem;
-  padding:.9rem 1.6rem;border-radius:8px;text-decoration:none;
-  font-weight:600;font-size:.95rem;letter-spacing:.02em;
-  transition:all .25s;cursor:none;border:none;font-family:'Space Grotesk';
-  position:relative;overflow:hidden;
-}
+.btn{display:inline-flex;align-items:center;gap:.6rem;padding:.9rem 1.6rem;border-radius:8px;text-decoration:none;font-weight:600;font-size:.95rem;transition:all 0.2s;cursor:none;border:none;font-family:'Space Grotesk';position:relative;overflow:hidden}
 .btn-primary{background:var(--lime);color:var(--void);box-shadow:var(--glow-lime)}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 36px rgba(200,255,30,.7)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 30px rgba(200,255,30,.7)}
 .btn-ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
 .btn-ghost:hover{border-color:var(--lime);color:var(--lime);background:var(--lime-soft)}
 
-.stat-row{display:flex;gap:2rem;flex-wrap:wrap}
-.stat .num{font-family:'Chakra Petch';font-size:1.8rem;font-weight:700;color:var(--lime);
-  text-shadow:0 0 12px rgba(200,255,30,.4)}
-.stat .lbl{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
-
-/* Hero terminal */
-.terminal{
-  background:rgba(8,8,14,.85);border:1px solid var(--line);
-  border-radius:var(--radius);overflow:hidden;
-  box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px rgba(200,255,30,.05);
-  backdrop-filter:blur(10px);
-}
-.term-bar{display:flex;align-items:center;gap:.5rem;padding:.7rem 1rem;
-  background:rgba(255,255,255,.03);border-bottom:1px solid var(--line)}
+.terminal{background:rgba(8,8,14,.85);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6);backdrop-filter:blur(10px);will-change:transform,opacity}
+.term-bar{display:flex;align-items:center;gap:.5rem;padding:.7rem 1rem;background:rgba(255,255,255,.03);border-bottom:1px solid var(--line)}
 .term-bar .dot{width:11px;height:11px;border-radius:50%}
-.term-bar .dot.r{background:#ff5f57}
-.term-bar .dot.y{background:#febc2e}
-.term-bar .dot.g{background:#28c840}
-.term-bar .ttl{margin-left:auto;font-family:'JetBrains Mono';
-  font-size:.75rem;color:var(--muted)}
-.term-body{padding:1.4rem;font-family:'JetBrains Mono';font-size:.83rem;
-  min-height:280px;color:var(--text)}
-.term-body .p{color:var(--magenta)}
-.term-body .p::before{content:"┌──(";color:var(--lime)}
-.term-body .p::after{content:")─[~]$";color:var(--lime)}
+.term-bar .dot.r{background:#ff5f57}.term-bar .dot.y{background:#febc2e}.term-bar .dot.g{background:#28c840}
+.term-bar .ttl{margin-left:auto;font-family:'JetBrains Mono';font-size:.72rem;color:var(--muted)}
+.term-body{padding:1.4rem;font-family:'JetBrains Mono';font-size:.8rem;min-height:280px;color:var(--text)}
+.term-body .p{color:var(--magenta)}.term-body .p::before{content:"┌──(";color:var(--lime)}.term-body .p::after{content:")─[~]$";color:var(--lime)}
 .term-body .cmd{color:var(--cyan);margin-left:.5rem}
 .term-body .out{color:var(--muted);margin:.3rem 0 .3rem 1.5rem}
-.term-body .ok{color:var(--lime)}
-.term-body .warn{color:var(--amber)}
-.cursor{display:inline-block;width:8px;height:14px;background:var(--lime);
-  vertical-align:middle;animation:blink 1s steps(2) infinite;margin-left:2px}
+.term-body .ok{color:var(--lime)}.term-body .warn{color:var(--amber)}
+.cursor{display:inline-block;width:8px;height:14px;background:var(--lime);vertical-align:middle;animation:blink 1s steps(2) infinite;margin-left:2px}
 @keyframes blink{50%{opacity:0}}
 
-/* === Section === */
-.section{padding:6rem clamp(1.2rem,4vw,3rem);position:relative;max-width:1300px;margin:0 auto}
-.sec-head{display:flex;justify-content:space-between;align-items:flex-end;
-  flex-wrap:wrap;gap:1rem;margin-bottom:3rem}
-.sec-head .ttl{font-family:'Chakra Petch';font-size:clamp(1.8rem,4vw,2.6rem);
-  font-weight:700;letter-spacing:-.01em}
-.sec-head .ttl .num{color:var(--lime);font-family:'JetBrains Mono';
-  font-size:.85rem;display:block;margin-bottom:.5rem;letter-spacing:.15em}
-.sec-head .ttl .line{display:inline-block;background:linear-gradient(90deg,var(--lime),var(--magenta));
-  -webkit-background-clip:text;background-clip:text;color:transparent}
-.sec-head .sub{color:var(--muted);max-width:380px;font-size:.95rem}
+/* === Sections === */
+.section{padding:5rem clamp(1.2rem,4vw,3rem);position:relative;max-width:1200px;margin:0 auto}
+.sec-head{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;margin-bottom:3rem}
+.sec-head .ttl{font-family:'Chakra Petch';font-size:clamp(1.6rem,4vw,2.2rem);font-weight:700}
+.sec-head .ttl .num{color:var(--lime);font-family:'JetBrains Mono';font-size:.8rem;display:block;margin-bottom:.5rem;letter-spacing:.15em}
+.sec-head .ttl .line{display:inline-block;background:linear-gradient(90deg,var(--lime),var(--magenta));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sec-head .sub{color:var(--muted);max-width:380px;font-size:.92rem}
 
-/* === Features Grid === */
+/* Interactive Feature Cards */
 .feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.2rem}
-.feat-card{
-  position:relative;padding:1.8rem;border:1px solid var(--line);
-  border-radius:var(--radius);background:var(--surface-2);
-  backdrop-filter:blur(8px);overflow:hidden;
-  transition:transform .3s,border-color .3s;transform-style:preserve-3d;
-}
-.feat-card::before{content:"";position:absolute;inset:0;
-  background:radial-gradient(circle at var(--mx,50%) var(--my,50%),
-    rgba(200,255,30,.18),transparent 50%);
-  opacity:0;transition:opacity .3s}
-.feat-card:hover::before{opacity:1}
-.feat-card:hover{border-color:rgba(200,255,30,.4)}
-.feat-num{position:absolute;top:1rem;right:1.2rem;
-  font-family:'JetBrains Mono';font-size:.7rem;color:var(--muted);opacity:.6}
-.feat-ic{width:48px;height:48px;display:grid;place-items:center;
-  border:1px solid var(--line);border-radius:10px;
-  background:linear-gradient(135deg,rgba(200,255,30,.08),transparent);
-  margin-bottom:1.2rem;color:var(--lime);font-size:1.3rem}
-.feat-card h3{font-family:'Chakra Petch';font-size:1.15rem;font-weight:600;
-  margin-bottom:.5rem;color:var(--text)}
-.feat-card p{color:var(--muted);font-size:.88rem;line-height:1.6}
-.feat-card .tag{display:inline-block;margin-top:1rem;
-  font-family:'JetBrains Mono';font-size:.7rem;color:var(--lime);
-  padding:.2rem .6rem;border:1px solid var(--line);border-radius:50px;
-  background:rgba(200,255,30,.04)}
+.feat-card{position:relative;padding:1.8rem;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface-2);backdrop-filter:blur(8px);overflow:hidden;transition:border-color 0.2s;will-change:transform;transform-style:preserve-3d}
+.feat-card::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(200,255,30,.18),transparent 50%);opacity:0;transition:opacity 0.2s;pointer-events:none;z-index:1}
+.feat-card:hover::before{opacity:1}.feat-card:hover{border-color:var(--line-strong)}
+.feat-content{position:relative;z-index:2;transform:translateZ(40px)}
+.feat-num{position:absolute;top:1rem;right:1.2rem;font-family:'JetBrains Mono';font-size:.7rem;color:var(--muted);opacity:.6}
+.feat-ic{width:48px;height:48px;display:grid;place-items:center;border:1px solid var(--line);border-radius:10px;background:linear-gradient(135deg,rgba(200,255,30,.08),transparent);margin-bottom:1.2rem;color:var(--lime);font-size:1.3rem;transition:transform 0.3s var(--ease-spring)}
+.feat-card:hover .feat-ic{transform:rotate(-8deg) scale(1.1)}
+.feat-card h3{font-family:'Chakra Petch';font-size:1.15rem;font-weight:600;margin-bottom:.5rem}
+.feat-card p{color:var(--muted);font-size:.86rem;line-height:1.6}
+.feat-card .tag{display:inline-block;margin-top:1rem;font-family:'JetBrains Mono';font-size:.68rem;color:var(--lime);padding:.2rem .6rem;border:1px solid var(--line);border-radius:50px;background:rgba(200,255,30,.04)}
 
-/* === Install === */
 .install-wrap{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start}
 .install-steps{display:flex;flex-direction:column;gap:1rem}
-.step{display:flex;gap:1rem;padding:1.2rem;border:1px solid var(--line);
-  border-radius:var(--radius);background:var(--surface-2);transition:all .25s}
+.step{display:flex;gap:1rem;padding:1.2rem;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface-2);transition:all 0.2s}
 .step:hover{border-color:var(--lime);transform:translateX(4px)}
-.step-n{font-family:'Chakra Petch';font-size:1.6rem;font-weight:700;
-  color:var(--lime);min-width:40px;line-height:1}
+.step-n{font-family:'Chakra Petch';font-size:1.6rem;font-weight:700;color:var(--lime);min-width:40px;line-height:1}
 .step h4{font-family:'Chakra Petch';font-size:1rem;margin-bottom:.3rem}
 .step p{color:var(--muted);font-size:.85rem}
-.step code{font-family:'JetBrains Mono';color:var(--cyan);
-  background:rgba(39,224,255,.08);padding:.1rem .4rem;border-radius:4px;font-size:.78rem}
-
-.term-install{background:rgba(8,8,14,.85);border:1px solid var(--line);
-  border-radius:var(--radius);overflow:hidden;
-  box-shadow:0 30px 80px rgba(0,0,0,.6)}
-.term-install .term-body{min-height:auto}
-.copy-btn{background:none;border:1px solid var(--line);color:var(--muted);
-  font-family:'JetBrains Mono';font-size:.7rem;padding:.3rem .6rem;
-  border-radius:5px;cursor:none;transition:all .2s}
+.step code{font-family:'JetBrains Mono';color:var(--cyan);background:rgba(39,224,255,.08);padding:.1rem .4rem;border-radius:4px;font-size:.76rem}
+.term-install{background:rgba(8,8,14,.85);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.copy-btn{background:none;border:1px solid var(--line);color:var(--muted);font-family:'JetBrains Mono';font-size:.68rem;padding:.3rem .6rem;border-radius:5px;cursor:none;transition:all 0.2s}
 .copy-btn:hover{color:var(--lime);border-color:var(--lime)}
 
-/* === Systems === */
 .sys-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem}
-.sys-card{position:relative;padding:1.5rem;border:1px solid var(--line);
-  border-radius:var(--radius);background:var(--surface-2);
-  transition:all .3s;overflow:hidden;cursor:none}
-.sys-card::after{content:"";position:absolute;top:0;left:-100%;width:100%;height:2px;
-  background:linear-gradient(90deg,transparent,var(--lime),transparent);
-  transition:left .5s}
-.sys-card:hover::after{left:100%}
-.sys-card:hover{border-color:var(--lime);transform:translateY(-4px)}
+.sys-card{position:relative;padding:1.5rem;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface-2);transition:all 0.2s;overflow:hidden}
+.sys-card::after{content:"";position:absolute;top:0;left:-100%;width:100%;height:2px;background:linear-gradient(90deg,transparent,var(--lime),transparent);transition:left 0.4s}
+.sys-card:hover::after{left:100%}.sys-card:hover{border-color:var(--lime);transform:translateY(-4px)}
 .sys-ic{font-size:1.8rem;color:var(--lime);margin-bottom:.8rem}
 .sys-card h4{font-family:'Chakra Petch';font-size:1rem;margin-bottom:.3rem}
-.sys-card p{color:var(--muted);font-size:.78rem}
-.sys-card .ver{position:absolute;top:1rem;right:1rem;
-  font-family:'JetBrains Mono';font-size:.65rem;color:var(--lime);opacity:.6}
+.sys-card p{color:var(--muted);font-size:.76rem}
+.sys-card .ver{position:absolute;top:1rem;right:1rem;font-family:'JetBrains Mono';font-size:.62rem;color:var(--lime);opacity:.6}
 
-/* === Timeline === */
 .timeline{position:relative;max-width:780px;margin:0 auto;padding-left:2rem}
-.timeline::before{content:"";position:absolute;left:6px;top:0;bottom:0;
-  width:1px;background:linear-gradient(var(--lime),var(--magenta),transparent)}
+.timeline::before{content:"";position:absolute;left:6px;top:0;bottom:0;width:1px;background:linear-gradient(var(--lime),var(--magenta),transparent)}
 .tl-item{position:relative;padding-bottom:2.5rem}
-.tl-item::before{content:"";position:absolute;left:-2rem;top:.4rem;
-  width:13px;height:13px;border-radius:50%;background:var(--void);
-  border:2px solid var(--lime);box-shadow:var(--glow-lime)}
-.tl-item:hover::before{background:var(--lime)}
-.tl-ver{font-family:'Chakra Petch';font-weight:700;font-size:1.15rem;color:var(--lime);
-  display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem}
-.tl-ver .badge{font-family:'JetBrains Mono';font-size:.65rem;
-  padding:.15rem .5rem;border-radius:4px;background:var(--lime-soft);
-  color:var(--lime);border:1px solid var(--line);font-weight:400}
-.tl-item p{color:var(--muted);font-size:.92rem}
+.tl-item::before{content:"";position:absolute;left:-2rem;top:.4rem;width:13px;height:13px;border-radius:50%;background:var(--void);border:2px solid var(--lime);box-shadow:var(--glow-lime);transition:all 0.2s}
+.tl-item:hover::before{background:var(--lime);transform:scale(1.2)}
+.tl-ver{font-family:'Chakra Petch';font-weight:700;font-size:1.15rem;color:var(--lime);display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem;flex-wrap:wrap}
+.tl-ver .badge{font-family:'JetBrains Mono';font-size:.62rem;padding:.15rem .5rem;border-radius:4px;background:var(--lime-soft);color:var(--lime);border:1px solid var(--line);font-weight:400}
+.tl-item p{color:var(--muted);font-size:.9rem}
 
-/* === Stats Band === */
-.stats-band{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;
-  padding:3rem clamp(1.2rem,4vw,3rem);max-width:1300px;margin:0 auto}
-.sb-card{padding:1.5rem;border:1px solid var(--line);border-radius:var(--radius);
-  background:var(--surface-2);text-align:center;transition:all .3s}
-.sb-card:hover{border-color:var(--lime);transform:translateY(-3px)}
-.sb-card .ic{font-size:1.5rem;color:var(--lime);margin-bottom:.6rem}
-.sb-card .v{font-family:'Chakra Petch';font-size:2rem;font-weight:700;color:var(--text)}
-.sb-card .l{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
-
-/* === Developer Portfolio === */
-.dev-wrap{display:grid;grid-template-columns:.8fr 1.2fr;gap:3rem;align-items:center}
-.dev-card{position:relative;padding:2rem;border:1px solid var(--line);
-  border-radius:var(--radius);background:var(--surface-2);text-align:center;
-  overflow:hidden}
-.dev-card::before{content:"";position:absolute;inset:-2px;
-  background:conic-gradient(from var(--ang,0deg),transparent 70%,var(--lime),transparent);
-  animation:spin 4s linear infinite;z-index:-1}
-@keyframes spin{to{transform:rotate(360deg)}}
-.dev-card::after{content:"";position:absolute;inset:0;border-radius:var(--radius);
-  background:var(--surface-2);z-index:-1}
-.dev-avatar{width:120px;height:120px;border-radius:50%;margin:0 auto 1.2rem;
-  background:linear-gradient(135deg,var(--lime),var(--magenta));
-  display:grid;place-items:center;font-family:'Chakra Petch';
-  font-size:2.5rem;font-weight:700;color:var(--void);
-  box-shadow:0 0 40px rgba(200,255,30,.3)}
-.dev-name{font-family:'Chakra Petch';font-size:1.4rem;font-weight:700}
-.dev-role{font-family:'JetBrains Mono';font-size:.78rem;color:var(--lime);
-  margin-top:.3rem;letter-spacing:.1em}
-.dev-socials{display:flex;justify-content:center;gap:.8rem;margin-top:1.2rem}
-.dev-socials a{width:38px;height:38px;display:grid;place-items:center;
-  border:1px solid var(--line);border-radius:8px;color:var(--muted);
-  transition:all .25s;text-decoration:none}
-.dev-socials a:hover{color:var(--lime);border-color:var(--lime);transform:translateY(-3px)}
-
-.dev-info h3{font-family:'Chakra Petch';font-size:1.8rem;margin-bottom:.8rem}
-.dev-info h3 .hl{color:var(--lime)}
-.dev-info p{color:var(--muted);margin-bottom:1.5rem;max-width:560px}
-.skills{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.8rem}
-.skill{font-family:'JetBrains Mono';font-size:.75rem;
-  padding:.3rem .8rem;border:1px solid var(--line);border-radius:50px;
-  background:rgba(200,255,30,.03);color:var(--text);transition:all .2s}
-.skill:hover{border-color:var(--lime);color:var(--lime);background:var(--lime-soft)}
-.dev-actions{display:flex;flex-wrap:wrap;gap:1rem}
-.portfolio-link{display:inline-flex;align-items:center;gap:.7rem;
-  padding:1rem 1.6rem;background:linear-gradient(135deg,var(--lime),var(--cyan));
-  color:var(--void);text-decoration:none;border-radius:8px;font-weight:600;
-  font-family:'Space Grotesk';transition:all .25s;cursor:none;
-  box-shadow:0 8px 30px rgba(200,255,30,.3)}
-.portfolio-link:hover{transform:translateY(-2px);
-  box-shadow:0 12px 40px rgba(200,255,30,.5)}
-.portfolio-link i.fa-arrow-up-right-from-square{font-size:.85rem}
+/* === Minimal Developer & Credits === */
+.dev-minimal{position:relative;display:flex;flex-direction:column;gap:2rem;padding:2.5rem;border:1px solid var(--line);border-radius:20px;background:linear-gradient(135deg,rgba(11,11,19,.8),rgba(22,22,34,.5));backdrop-filter:blur(10px);overflow:hidden;transition:border-color 0.3s}
+.dev-minimal::before{content:"";position:absolute;inset:-1px;border-radius:20px;background:conic-gradient(from var(--ang,0deg),transparent 0%,var(--lime) 15%,transparent 30%,transparent 50%,var(--magenta) 65%,transparent 80%,transparent 100%);opacity:0;transition:opacity 0.3s;animation:spin 6s linear infinite;z-index:-1}
+@property --ang{syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes spin{to{--ang:360deg}}
+.dev-minimal:hover{border-color:transparent}.dev-minimal:hover::before{opacity:1}
+.dev-profile{display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap}
+.dev-avatar{width:70px;height:70px;display:grid;place-items:center;border-radius:50%;flex-shrink:0;font-family:'Chakra Petch';font-size:1.5rem;font-weight:700;color:var(--void);background:linear-gradient(135deg,var(--lime),var(--cyan));box-shadow:var(--glow-lime)}
+.dev-info{flex:1;min-width:200px}
+.dev-label{font-family:'JetBrains Mono';font-size:.7rem;color:var(--lime);text-transform:uppercase;letter-spacing:.1em;display:block;margin-bottom:.3rem}
+.dev-info h3{font-family:'Chakra Petch';font-size:1.4rem;font-weight:700;color:var(--text);margin-bottom:.3rem}
+.dev-info p{color:var(--muted);font-size:.88rem}
+.dev-info p b{color:var(--text);font-weight:500}
+.dev-actions{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;padding-top:1.5rem;border-top:1px solid var(--line)}
+.dev-socials{display:flex;gap:.6rem}
+.dev-socials a{width:38px;height:38px;display:grid;place-items:center;border:1px solid var(--line);border-radius:8px;color:var(--muted);transition:all 0.2s;text-decoration:none;background:rgba(255,255,255,.02)}
+.dev-socials a:hover{color:var(--lime);border-color:var(--lime);transform:translateY(-3px);background:var(--lime-soft)}
+.portfolio-link{display:inline-flex;align-items:center;gap:.7rem;padding:.8rem 1.4rem;border-radius:8px;text-decoration:none;background:var(--lime);color:var(--void);font-weight:600;font-family:'Space Grotesk';transition:all 0.2s;cursor:none;box-shadow:0 4px 15px rgba(200,255,30,.2)}
+.portfolio-link:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(200,255,30,.4)}
 
 /* === Disclaimer === */
-.disclaim{padding:2rem;border:1px solid rgba(255,45,117,.3);border-radius:var(--radius);
-  background:rgba(255,45,117,.05);position:relative}
-.disclaim::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
-  background:var(--magenta)}
-.disclaim h4{font-family:'Chakra Petch';color:var(--magenta);font-size:1.1rem;
-  margin-bottom:.8rem;display:flex;align-items:center;gap:.5rem}
+.disclaim{padding:2rem;border:1px solid rgba(255,45,117,.3);border-radius:var(--radius);background:rgba(255,45,117,.05);position:relative}
+.disclaim::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--magenta)}
+.disclaim h4{font-family:'Chakra Petch';color:var(--magenta);font-size:1.1rem;margin-bottom:.8rem;display:flex;align-items:center;gap:.5rem}
 .disclaim p{color:var(--text);font-size:.95rem;margin-bottom:.8rem}
 .disclaim strong{color:var(--magenta)}
 
-/* === Footer === */
-footer{padding:3rem clamp(1.2rem,4vw,3rem) 2rem;border-top:1px solid var(--line);
-  background:var(--void-2);position:relative}
-.foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:2rem;
-  max-width:1300px;margin:0 auto 2rem}
-.foot-brand .logo-text{font-size:1.1rem}
-.foot-brand p{color:var(--muted);font-size:.85rem;margin-top:.8rem;max-width:380px}
-.foot-col h5{font-family:'Chakra Petch';font-size:.95rem;color:var(--text);
-  margin-bottom:1rem;letter-spacing:.05em}
-.foot-col a{display:block;color:var(--muted);text-decoration:none;font-size:.85rem;
-  margin-bottom:.5rem;transition:color .2s}
-.foot-col a:hover{color:var(--lime)}
-.foot-bottom{max-width:1300px;margin:0 auto;display:flex;justify-content:space-between;
-  align-items:center;flex-wrap:wrap;gap:1rem;padding-top:1.5rem;border-top:1px solid var(--line)}
-.foot-bottom p{color:var(--muted);font-size:.8rem;font-family:'JetBrains Mono'}
-.foot-bottom .made{color:var(--lime)}
+/* === Creative Command Deck Footer === */
+.cyber-footer{position:relative;background:var(--void-2);border-top:1px solid var(--line);overflow:hidden;padding-top:4rem}
+.foot-glow{position:absolute;top:-50%;left:50%;transform:translateX(-50%);width:80%;height:400px;background:radial-gradient(ellipse at center,rgba(200,255,30,.05) 0%,transparent 70%);pointer-events:none}
 
-/* === Reveal === */
-.reveal{opacity:0;transform:translateY(30px);transition:opacity .8s,transform .8s}
+.foot-wordmark{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:100%;text-align:center;font-family:'Chakra Petch';font-weight:700;font-size:clamp(5rem, 18vw, 14rem);line-height:1;color:transparent;-webkit-text-stroke:1px rgba(200,255,30,0.1);pointer-events:none;z-index:0;white-space:nowrap;will-change:transform}
+
+.foot-content{max-width:1200px;margin:0 auto;padding:4rem clamp(1.2rem,4vw,3rem) 2rem;position:relative;z-index:2}
+.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1.2fr;gap:2.5rem;margin-bottom:3rem}
+
+.foot-brand .logo-text{font-size:1.1rem;max-width:120px;opacity:1}
+.foot-brand p{color:var(--muted);font-size:.85rem;margin-top:.8rem;max-width:300px}
+.foot-socials{display:flex;gap:.6rem;margin-top:1.2rem}
+.foot-socials a{width:38px;height:38px;display:grid;place-items:center;border:1px solid var(--line);border-radius:8px;color:var(--muted);transition:all 0.2s;text-decoration:none;background:rgba(255,255,255,.02)}
+.foot-socials a:hover{color:var(--lime);border-color:var(--lime);transform:translateY(-3px);background:var(--lime-soft)}
+
+.foot-col h5{font-family:'Chakra Petch';font-size:.95rem;color:var(--text);margin-bottom:1rem;letter-spacing:.04em}
+.foot-link{display:flex;align-items:center;gap:.5rem;color:var(--muted);text-decoration:none;font-size:.85rem;margin-bottom:.6rem;transition:color 0.2s;font-family:'JetBrains Mono'}
+.foot-link i{color:var(--lime);font-size:.7rem;transition:transform 0.2s}
+.foot-link:hover{color:var(--lime)}
+.foot-link:hover i{transform:translateX(4px)}
+
+.foot-status h5{font-family:'Chakra Petch';font-size:.95rem;color:var(--text);margin-bottom:1rem;letter-spacing:.04em}
+.status-widget{padding:1.2rem;border:1px solid var(--line);border-radius:var(--radius);background:rgba(0,0,0,.3);font-family:'JetBrains Mono';font-size:.72rem}
+.status-row{display:flex;align-items:center;gap:.6rem;color:var(--lime);margin-bottom:.8rem;border-bottom:1px solid var(--line);padding-bottom:.8rem}
+.status-row .pulse{width:8px;height:8px;border-radius:50%;background:var(--lime);box-shadow:var(--glow-lime);animation:pulse 1.6s infinite}
+.status-meta{display:flex;flex-direction:column;gap:.4rem}
+.status-meta div{display:flex;justify-content:space-between;color:var(--muted)}
+.status-meta div b{color:var(--text);font-weight:400}
+
+.foot-cli{border-top:1px solid var(--line);padding-top:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.foot-cli-left{display:flex;align-items:center;gap:.8rem}
+.foot-cli-left p{color:var(--muted);font-size:.78rem;font-family:'JetBrains Mono'}
+.foot-cli-left a{color:var(--lime);text-decoration:none;transition:opacity 0.2s}
+.foot-cli-left a:hover{opacity:.8;text-decoration:underline}
+.foot-cli-prompt{font-family:'JetBrains Mono';font-size:.85rem;color:var(--cyan);background:rgba(39,224,255,.05);padding:.5rem 1rem;border:1px solid var(--line);border-radius:6px;cursor:none;transition:all 0.2s}
+.foot-cli-prompt:hover{border-color:var(--cyan);box-shadow:0 0 15px rgba(39,224,255,.2)}
+.foot-cli-prompt i{margin-left:.5rem;transition:transform 0.2s}
+.foot-cli-prompt:hover i{transform:rotate(-45deg)}
+
+.back-top{position:fixed;bottom:24px;right:24px;width:48px;height:48px;display:grid;place-items:center;border-radius:50%;background:rgba(8,8,14,.85);backdrop-filter:blur(12px);border:1px solid var(--line-strong);color:var(--lime);font-size:1rem;cursor:none;opacity:0;pointer-events:none;transition:all 0.3s var(--ease-out);z-index:999;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.back-top.show{opacity:1;pointer-events:auto}
+.back-top:hover{transform:translateY(-4px) rotate(-15deg);box-shadow:0 12px 30px rgba(200,255,30,.4);border-color:var(--lime)}
+
+/* === Reveal Animations === */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity 0.6s var(--ease-out),transform 0.6s var(--ease-out);will-change:transform,opacity}
 .reveal.in{opacity:1;transform:none}
+.wipe-reveal{clip-path:inset(0 100% 0 0);transition:clip-path 0.8s var(--ease-out);will-change:clip-path}
+.wipe-reveal.in{clip-path:inset(0 0 0 0)}
 
-/* === Responsive === */
 @media(max-width:980px){
   .hero{grid-template-columns:1fr;padding-top:7rem}
-  .install-wrap,.dev-wrap{grid-template-columns:1fr}
-  .stats-band{grid-template-columns:repeat(2,1fr)}
+  .install-wrap{grid-template-columns:1fr}
   .foot-grid{grid-template-columns:1fr 1fr}
-  .menu-btn{display:block}
-  nav{display:none;position:absolute;top:100%;left:0;right:0;
-    flex-direction:column;background:rgba(6,6,9,.95);
-    padding:1rem;border-bottom:1px solid var(--line)}
-  nav.open{display:flex}
-  nav a{padding:.8rem 1rem}
-  .nav-cta{margin:.5rem 1rem 0}
+  .island-toggle{display:block}
+  .island-center{position:absolute;top:100%;left:50%;transform:translateX(-50%) translateY(-4px);width:max-content;background:rgba(8,8,14,.95);padding:.5rem;border-radius:30px;margin-top:8px;flex-direction:column;gap:.2rem;opacity:0;pointer-events:none}
+  .island.open .island-center{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
 }
-@media(max-width:560px){
+@media(max-width:680px){
   body{cursor:auto}
   .cur,.cur-dot{display:none}
-  .btn,.nav-cta,.sys-card,.copy-btn,.portfolio-link{cursor:pointer}
-  .stats-band{grid-template-columns:1fr 1fr}
+  .btn,.nav-cta,.sys-card,.copy-btn,.portfolio-link,.back-top,.island,.island-toggle,.foot-cli-prompt{cursor:pointer}
   .foot-grid{grid-template-columns:1fr}
-  .stat-row{gap:1rem}
+  .island{width:200px}.island:hover{width:200px}
 }
 </style>
 </head>
 <body>
 
-<!-- Boot Loader -->
-<div id="boot">
-  <div class="boot-logo">KriBekHUB</div>
-  <div class="boot-log" id="bootLog"></div>
-  <div class="boot-bar"><i></i></div>
-</div>
-
-<!-- Custom Cursor -->
 <div class="cur" id="cur"></div>
 <div class="cur-dot" id="curDot"></div>
 
-<!-- Backgrounds -->
 <div id="grid-bg"></div>
 <canvas id="matrix"></canvas>
 <div class="scanlines"></div>
 <div class="vignette"></div>
 
-<!-- Header -->
-<header>
-  <a href="#" class="logo">
-    <div class="logo-mark"></div>
-    <span class="logo-text">Kri<b>Bek</b>HUB</span>
-    <span class="logo-pulse"></span>
-  </a>
-  <button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
-  <nav id="nav">
-    <a href="#features" class="active">// Features</a>
-    <a href="#install">// Install</a>
-    <a href="#systems">// Systems</a>
-    <a href="#changelog">// Changelog</a>
-    <a href="#developer">// Developer</a>
-    <a href="https://github.com/Bibekbista0406/KriBekHUB" target="_blank" class="nav-cta">
-      <i class="fab fa-github"></i> Source
-    </a>
+<div class="island-wrap">
+  <nav class="island" id="island">
+    <div class="island-left">
+      <a href="#" class="island-logo">
+        <span class="logo-mark">K</span>
+        <span class="logo-text">KriBekHUB</span>
+      </a>
+    </div>
+    <div class="island-center" id="islandCenter">
+      <a href="#features" class="island-link active">Features</a>
+      <a href="#install" class="island-link">Install</a>
+      <a href="#changelog" class="island-link">Changelog</a>
+      <a href="#developer" class="island-link">Developer</a>
+    </div>
+    <div class="island-right">
+      <div class="island-status">
+        <span class="pulse"></span>
+        <span class="txt">ONLINE</span>
+      </div>
+      <a href="https://github.com/Bibekbista0406/KriBekHUB" target="_blank" class="island-cta" aria-label="GitHub">
+        <i class="fab fa-github"></i>
+      </a>
+      <button class="island-toggle" id="islandToggle" aria-label="Menu">
+        <i class="fas fa-ellipsis"></i>
+      </button>
+      <div class="island-eq">
+        <span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+    <div class="island-progress" id="islandProgress"></div>
   </nav>
-</header>
+</div>
 
-<!-- Hero -->
 <section class="hero">
   <div>
-    <div class="hero-tag"><span class="dot"></span> SYSTEM ONLINE / v2.0 RELEASE</div>
-    <h1>
+    <div class="hero-tag reveal"><span class="dot"></span> SYSTEM ONLINE / v2.0 RELEASE</div>
+    <h1 class="reveal">
       <span class="glitch" data-text="Breach">Breach</span> the<br>
       <span class="v">Perimeter</span>.<br>
       Secure the <span class="glitch" data-text="Frame">Frame</span>.
     </h1>
-    <p class="lead">
+    <p class="lead reveal">
       KriBekHUB is an advanced ethical hacking toolkit engineered for
       <b>webcam & GPS capture</b> via social engineering. Built for
       <b>authorized penetration testers</b> and security researchers.
     </p>
-    <div class="hero-cta">
-      <a href="#install" class="btn btn-primary">
-        <i class="fas fa-terminal"></i> Quick Start
-      </a>
-      <a href="https://github.com/Bibekbista0406/KriBekHUB" target="_blank" class="btn btn-ghost">
-        <i class="fab fa-github"></i> View Repository
-      </a>
-    </div>
-    <div class="stat-row">
-      <div class="stat"><div class="num" data-count="6">0</div><div class="lbl">Modules</div></div>
-      <div class="stat"><div class="num" data-count="2">0</div><div class="lbl">Major Releases</div></div>
-      <div class="stat"><div class="num" data-count="4">0</div><div class="lbl">OS Supported</div></div>
+    <div class="hero-cta reveal">
+      <a href="#install" class="btn btn-primary" data-magnetic><i class="fas fa-terminal"></i> Quick Start</a>
+      <a href="https://github.com/Bibekbista0406/KriBekHUB" target="_blank" class="btn btn-ghost" data-magnetic><i class="fab fa-github"></i> View Repository</a>
     </div>
   </div>
 
-  <div class="terminal">
+  <div class="terminal reveal" id="heroTerm">
     <div class="term-bar">
       <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
       <span class="ttl">root@kribek: ~</span>
@@ -521,124 +350,36 @@ footer{padding:3rem clamp(1.2rem,4vw,3rem) 2rem;border-top:1px solid var(--line)
   </div>
 </section>
 
-<!-- Stats Band -->
-<div class="stats-band">
-  <div class="sb-card reveal">
-    <div class="ic"><i class="fas fa-shield-halved"></i></div>
-    <div class="v" data-count="100">0</div><div class="l">% Ethical</div>
-  </div>
-  <div class="sb-card reveal">
-    <div class="ic"><i class="fas fa-bolt"></i></div>
-    <div class="v" data-count="60">0</div><div class="l">FPS Live</div>
-  </div>
-  <div class="sb-card reveal">
-    <div class="ic"><i class="fas fa-code-branch"></i></div>
-    <div class="v" data-count="2">0</div><div class="l">Tunnels</div>
-  </div>
-  <div class="sb-card reveal">
-    <div class="ic"><i class="fas fa-eye"></i></div>
-    <div class="v" data-count="6">0</div><div class="l">Templates</div>
-  </div>
-</div>
-
-<!-- Features -->
 <section id="features" class="section">
   <div class="sec-head">
-    <div class="ttl reveal">
+    <div class="ttl wipe-reveal">
       <span class="num">// 01. CAPABILITIES</span>
       <span class="line">Arsenal of Attack Vectors</span>
     </div>
     <p class="sub reveal">A modular suite engineered for red-team operations, social engineering simulations, and authorized security assessments.</p>
   </div>
-
-  <div class="feat-grid">
-    <div class="feat-card reveal" data-tilt>
-      <span class="feat-num">01</span>
-      <div class="feat-ic"><i class="fas fa-camera-retro"></i></div>
-      <h3>Webcam Capture</h3>
-      <p>Discreetly obtain webcam snapshots from target devices using browser-based social engineering templates.</p>
-      <span class="tag">payload: cam.js</span>
-    </div>
-    <div class="feat-card reveal" data-tilt>
-      <span class="feat-num">02</span>
-      <div class="feat-ic"><i class="fas fa-location-crosshairs"></i></div>
-      <h3>GPS Location</h3>
-      <p>Pinpoint device geolocation with high-precision Google Maps integration and live coordinate exfiltration.</p>
-      <span class="tag">payload: geo.js</span>
-    </div>
-    <div class="feat-card reveal" data-tilt>
-      <span class="feat-num">03</span>
-      <div class="feat-ic"><i class="fas fa-fish-fins"></i></div>
-      <h3>Phishing Templates</h3>
-      <p>Modular, customizable landing pages engineered for realistic social engineering engagements.</p>
-      <span class="tag">templates: 6+</span>
-    </div>
-    <div class="feat-card reveal" data-tilt>
-      <span class="feat-num">04</span>
-      <div class="feat-ic"><i class="fas fa-microchip"></i></div>
-      <h3>Architecture Detection</h3>
-      <p>Smart fingerprinting of system architecture to deliver optimized payloads automatically.</p>
-      <span class="tag">auto-detect</span>
-    </div>
-    <div class="feat-card reveal" data-tilt>
-      <span class="feat-num">05</span>
-      <div class="feat-ic"><i class="fas fa-broom"></i></div>
-      <h3>One-Click Cleanup</h3>
-      <p>Remove all traces, kill tunnels, and reset environment state with a single command.</p>
-      <span class="tag">clean.sh</span>
-    </div>
-    <div class="feat-card reveal" data-tilt>
-      <span class="feat-num">06</span>
-      <div class="feat-ic"><i class="fas fa-cloud-bolt"></i></div>
-      <h3>Tunnel Support</h3>
-      <p>Native Ngrok and Cloudflare tunnel integration for secure, isolated remote access.</p>
-      <span class="tag">ngrok / cloudflared</span>
-    </div>
+  <div class="feat-grid reveal">
+    <div class="feat-card"><div class="feat-content"><span class="feat-num">01</span><div class="feat-ic"><i class="fas fa-camera-retro"></i></div><h3>Webcam Capture</h3><p>Discreetly obtain webcam snapshots from target devices using browser-based social engineering templates.</p><span class="tag">payload: cam.js</span></div></div>
+    <div class="feat-card"><div class="feat-content"><span class="feat-num">02</span><div class="feat-ic"><i class="fas fa-location-crosshairs"></i></div><h3>GPS Location</h3><p>Pinpoint device geolocation with high-precision Google Maps integration and live coordinate exfiltration.</p><span class="tag">payload: geo.js</span></div></div>
+    <div class="feat-card"><div class="feat-content"><span class="feat-num">03</span><div class="feat-ic"><i class="fas fa-fish-fins"></i></div><h3>Phishing Templates</h3><p>Modular, customizable landing pages engineered for realistic social engineering engagements.</p><span class="tag">templates: 6+</span></div></div>
+    <div class="feat-card"><div class="feat-content"><span class="feat-num">04</span><div class="feat-ic"><i class="fas fa-microchip"></i></div><h3>Architecture Detection</h3><p>Smart fingerprinting of system architecture to deliver optimized payloads automatically.</p><span class="tag">auto-detect</span></div></div>
+    <div class="feat-card"><div class="feat-content"><span class="feat-num">05</span><div class="feat-ic"><i class="fas fa-broom"></i></div><h3>One-Click Cleanup</h3><p>Remove all traces, kill tunnels, and reset environment state with a single command.</p><span class="tag">clean.sh</span></div></div>
+    <div class="feat-card"><div class="feat-content"><span class="feat-num">06</span><div class="feat-ic"><i class="fas fa-cloud-bolt"></i></div><h3>Tunnel Support</h3><p>Native Ngrok and Cloudflare tunnel integration for secure, isolated remote access.</p><span class="tag">ngrok / cloudflared</span></div></div>
   </div>
 </section>
 
-<!-- Install -->
-<section id="install" class="section" style="background:linear-gradient(180deg,transparent,rgba(11,11,19,.6),transparent)">
+<section id="install" class="section">
   <div class="sec-head">
-    <div class="ttl reveal">
-      <span class="num">// 02. DEPLOYMENT</span>
-      <span class="line">Get Operational in 60s</span>
-    </div>
+    <div class="ttl wipe-reveal"><span class="num">// 02. DEPLOYMENT</span><span class="line">Get Operational in 60s</span></div>
     <p class="sub reveal">Three commands. Zero configuration. Clone, execute, and engage.</p>
   </div>
-
   <div class="install-wrap">
-    <div class="install-steps">
-      <div class="step reveal">
-        <div class="step-n">01</div>
-        <div>
-          <h4>Clone Repository</h4>
-          <p>Pull the latest source from GitHub using <code>git clone</code>.</p>
-        </div>
-      </div>
-      <div class="step reveal">
-        <div class="step-n">02</div>
-        <div>
-          <h4>Enter Directory</h4>
-          <p>Navigate into the project folder with <code>cd KriBekHUB</code>.</p>
-        </div>
-      </div>
-      <div class="step reveal">
-        <div class="step-n">03</div>
-        <div>
-          <h4>Execute Toolkit</h4>
-          <p>Launch the main script with <code>bash kri.sh</code> and follow prompts.</p>
-        </div>
-      </div>
-      <div class="step reveal">
-        <div class="step-n">04</div>
-        <div>
-          <h4>Cleanup Traces</h4>
-          <p>When finished, run <code>bash clean.sh</code> to wipe all artifacts.</p>
-        </div>
-      </div>
+    <div class="install-steps reveal">
+      <div class="step"><div class="step-n">01</div><div><h4>Clone Repository</h4><p>Pull the latest source from GitHub using <code>git clone</code>.</p></div></div>
+      <div class="step"><div class="step-n">02</div><div><h4>Enter Directory</h4><p>Navigate into the project folder with <code>cd KriBekHUB</code>.</p></div></div>
+      <div class="step"><div class="step-n">03</div><div><h4>Execute Toolkit</h4><p>Launch the main script with <code>bash kri.sh</code> and follow prompts.</p></div></div>
+      <div class="step"><div class="step-n">04</div><div><h4>Cleanup Traces</h4><p>When finished, run <code>bash clean.sh</code> to wipe all artifacts.</p></div></div>
     </div>
-
     <div class="term-install reveal">
       <div class="term-bar">
         <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
@@ -650,298 +391,235 @@ footer{padding:3rem clamp(1.2rem,4vw,3rem) 2rem;border-top:1px solid var(--line)
   </div>
 </section>
 
-<!-- Supported Systems -->
 <section id="systems" class="section">
   <div class="sec-head">
-    <div class="ttl reveal">
-      <span class="num">// 03. COMPATIBILITY</span>
-      <span class="line">Cross-Platform by Design</span>
-    </div>
+    <div class="ttl wipe-reveal"><span class="num">// 03. COMPATIBILITY</span><span class="line">Cross-Platform by Design</span></div>
     <p class="sub reveal">Tested across major penetration testing distributions and environments.</p>
   </div>
-
-  <div class="sys-grid">
-    <div class="sys-card reveal">
-      <span class="ver">PRIMARY</span>
-      <div class="sys-ic"><i class="fab fa-linux"></i></div>
-      <h4>Kali Linux</h4>
-      <p>Primary development & test platform</p>
-    </div>
-    <div class="sys-card reveal">
-      <span class="ver">MOBILE</span>
-      <div class="sys-ic"><i class="fas fa-mobile-screen-button"></i></div>
-      <h4>Termux</h4>
-      <p>Android on-the-go pentesting</p>
-    </div>
-    <div class="sys-card reveal">
-      <span class="ver">STABLE</span>
-      <div class="sys-ic"><i class="fab fa-ubuntu"></i></div>
-      <h4>Ubuntu</h4>
-      <p>Debian-based distributions</p>
-    </div>
-    <div class="sys-card reveal">
-      <span class="ver">BETA</span>
-      <div class="sys-ic"><i class="fab fa-apple"></i></div>
-      <h4>macOS</h4>
-      <p>Intel & Apple Silicon support</p>
-    </div>
-    <div class="sys-card reveal">
-      <span class="ver">STABLE</span>
-      <div class="sys-ic"><i class="fas fa-feather-pointed"></i></div>
-      <h4>Parrot OS</h4>
-      <p>Security-focused Linux distro</p>
-    </div>
-    <div class="sys-card reveal">
-      <span class="ver">WSL</span>
-      <div class="sys-ic"><i class="fab fa-windows"></i></div>
-      <h4>Windows WSL</h4>
-      <p>Windows Subsystem for Linux</p>
-    </div>
+  <div class="sys-grid reveal">
+    <div class="sys-card"><span class="ver">PRIMARY</span><div class="sys-ic"><i class="fab fa-linux"></i></div><h4>Kali Linux</h4><p>Primary development & test platform</p></div>
+    <div class="sys-card"><span class="ver">MOBILE</span><div class="sys-ic"><i class="fas fa-mobile-screen-button"></i></div><h4>Termux</h4><p>Android on-the-go pentesting</p></div>
+    <div class="sys-card"><span class="ver">STABLE</span><div class="sys-ic"><i class="fab fa-ubuntu"></i></div><h4>Ubuntu</h4><p>Debian-based distributions</p></div>
+    <div class="sys-card"><span class="ver">BETA</span><div class="sys-ic"><i class="fab fa-apple"></i></div><h4>macOS</h4><p>Intel & Apple Silicon support</p></div>
+    <div class="sys-card"><span class="ver">STABLE</span><div class="sys-ic"><i class="fas fa-feather-pointed"></i></div><h4>Parrot OS</h4><p>Security-focused Linux distro</p></div>
+    <div class="sys-card"><span class="ver">WSL</span><div class="sys-ic"><i class="fab fa-windows"></i></div><h4>Windows WSL</h4><p>Windows Subsystem for Linux</p></div>
   </div>
 </section>
 
-<!-- Changelog -->
 <section id="changelog" class="section">
   <div class="sec-head">
-    <div class="ttl reveal">
-      <span class="num">// 04. EVOLUTION</span>
-      <span class="line">Version History</span>
-    </div>
+    <div class="ttl wipe-reveal"><span class="num">// 04. EVOLUTION</span><span class="line">Version History</span></div>
     <p class="sub reveal">Tracing the toolkit's evolution across releases.</p>
   </div>
-
-  <div class="timeline">
-    <div class="tl-item reveal">
-      <div class="tl-ver">v2.0 <span class="badge">CURRENT</span></div>
-      <p>Added GPS capture functionality with Google Maps integration, redesigned UI, enhanced target tracking, and expanded template library.</p>
-    </div>
-    <div class="tl-item reveal">
-      <div class="tl-ver">v1.9</div>
-      <p>Improved CPU architecture detection, added full Termux support, and optimized payload delivery performance.</p>
-    </div>
-    <div class="tl-item reveal">
-      <div class="tl-ver">v1.8</div>
-      <p>Implemented Cloudflare Tunnel support alongside Ngrok for more reliable and resilient connections.</p>
-    </div>
-    <div class="tl-item reveal">
-      <div class="tl-ver">v1.3 – v1.7</div>
-      <p>Added multiple new phishing templates, resolved link generation issues, and improved overall user flow.</p>
-    </div>
+  <div class="timeline reveal">
+    <div class="tl-item"><div class="tl-ver">v2.0 <span class="badge">CURRENT</span></div><p>Added GPS capture functionality with Google Maps integration, redesigned UI, enhanced target tracking, and expanded template library.</p></div>
+    <div class="tl-item"><div class="tl-ver">v1.9</div><p>Improved CPU architecture detection, added full Termux support, and optimized payload delivery performance.</p></div>
+    <div class="tl-item"><div class="tl-ver">v1.8</div><p>Implemented Cloudflare Tunnel support alongside Ngrok for more reliable and resilient connections.</p></div>
+    <div class="tl-item"><div class="tl-ver">v1.3 – v1.7</div><p>Added multiple new phishing templates, resolved link generation issues, and improved overall user flow.</p></div>
   </div>
 </section>
 
-<!-- Developer -->
+<!-- Minimal Developer Profile -->
 <section id="developer" class="section">
   <div class="sec-head">
-    <div class="ttl reveal">
-      <span class="num">// 05. ARCHITECT</span>
-      <span class="line">Meet the Developer</span>
-    </div>
-    <p class="sub reveal">The mind behind KriBekHUB — building tools for the security community.</p>
+    <div class="ttl wipe-reveal"><span class="num">// 05. CREDITS</span><span class="line">The Architect</span></div>
   </div>
-
-  <div class="dev-wrap">
-    <div class="dev-card reveal">
+  
+  <div class="dev-minimal reveal">
+    <div class="dev-profile">
       <div class="dev-avatar">BB</div>
-      <div class="dev-name">Bibek Bista</div>
-      <div class="dev-role">SECURITY ENGINEER / DEV</div>
+      <div class="dev-info">
+        <span class="dev-label">Author & Maintainer</span>
+        <h3>Bibek Bista</h3>
+        <p>Inspired by the original work of <b>TechChip</b>. Built and maintained with a focus on ethical hacking and security research.</p>
+      </div>
+    </div>
+    <div class="dev-actions">
       <div class="dev-socials">
         <a href="https://github.com/Bibekbista0406" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
         <a href="https://x.com/bibekbista04" target="_blank" aria-label="Twitter"><i class="fab fa-x-twitter"></i></a>
         <a href="https://www.facebook.com/bibek.bista.7528" target="_blank" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
-        <a href="https://bibekbista.vercel.app/" target="_blank" aria-label="Portfolio"><i class="fas fa-globe"></i></a>
       </div>
-    </div>
-
-    <div class="dev-info reveal">
-      <h3>Building the <span class="hl">next generation</span> of ethical hacking tools.</h3>
-      <p>
-        Bibek Bista is a security researcher and developer focused on creating accessible, powerful tools for the ethical hacking community. With KriBekHUB, the mission is simple: equip authorized testers with a clean, modular, and effective toolkit that respects both capability and responsibility.
-      </p>
-      <div class="skills">
-        <span class="skill">Bash Scripting</span>
-        <span class="skill">Penetration Testing</span>
-        <span class="skill">Social Engineering</span>
-        <span class="skill">Web Security</span>
-        <span class="skill">Network Analysis</span>
-        <span class="skill">Payload Engineering</span>
-        <span class="skill">Linux / Unix</span>
-        <span class="skill">Python</span>
-      </div>
-      <div class="dev-actions">
-        <a href="https://bibekbista.vercel.app/" target="_blank" class="portfolio-link">
-          <i class="fas fa-arrow-up-right-from-square"></i>
-          Visit Developer Portfolio
-        </a>
-        <a href="https://github.com/Bibekbista0406/KriBekHUB" target="_blank" class="btn btn-ghost">
-          <i class="fab fa-github"></i> Star the Repo
-        </a>
-      </div>
+      <a href="https://bibekbista.vercel.app/" target="_blank" class="portfolio-link" data-magnetic>
+        Visit Portfolio <i class="fas fa-arrow-up-right-from-square"></i>
+      </a>
     </div>
   </div>
 </section>
 
-<!-- Disclaimer -->
 <section class="section">
   <div class="sec-head">
-    <div class="ttl reveal">
-      <span class="num">// 06. LEGAL</span>
-      <span class="line">Read Before Use</span>
-    </div>
+    <div class="ttl wipe-reveal"><span class="num">// 06. LEGAL</span><span class="line">Read Before Use</span></div>
   </div>
   <div class="disclaim reveal">
     <h4><i class="fas fa-triangle-exclamation"></i> Legal Disclaimer</h4>
-    <p>
-      <strong>WARNING:</strong> KriBekHUB is developed strictly for <strong>educational purposes</strong> and <strong>authorized penetration testing</strong>. Unauthorized use of this tool against systems you do not own or have explicit written permission to test is <strong>illegal</strong>.
-    </p>
-    <p>
-      The developer assumes no liability and is not responsible for any misuse or damage caused by this tool. By downloading, cloning, or executing KriBekHUB, you accept full responsibility for your actions and agree to use it <strong>legally and ethically</strong>.
-    </p>
+    <p><strong>WARNING:</strong> KriBekHUB is developed strictly for <strong>educational purposes</strong> and <strong>authorized penetration testing</strong>. Unauthorized use of this tool against systems you do not own or have explicit written permission to test is <strong>illegal</strong>.</p>
+    <p>The developer assumes no liability and is not responsible for any misuse or damage caused by this tool. By downloading, cloning, or executing KriBekHUB, you accept full responsibility for your actions and agree to use it <strong>legally and ethically</strong>.</p>
   </div>
 </section>
 
-<!-- Footer -->
-<footer>
-  <div class="foot-grid">
-    <div class="foot-brand">
-      <a href="#" class="logo">
-        <div class="logo-mark"></div>
-        <span class="logo-text">Kri<b>Bek</b>HUB</span>
+<!-- Creative Command Deck Footer -->
+<footer class="cyber-footer">
+  <div class="foot-glow"></div>
+  <div class="foot-wordmark" id="footWordmark">KRIBEKHUB</div>
+  
+  <div class="foot-content">
+    <div class="foot-grid">
+      <div class="foot-brand reveal">
+        <a href="#" class="island-logo">
+          <span class="logo-mark">K</span>
+          <span class="logo-text" style="max-width:120px;opacity:1">KriBekHUB</span>
+        </a>
+        <p>An advanced ethical hacking toolkit for webcam & GPS capture via social engineering. Built for security researchers, by security researchers.</p>
+        <div class="foot-socials">
+          <a href="https://github.com/Bibekbista0406" target="_blank"><i class="fab fa-github"></i></a>
+          <a href="https://x.com/bibekbista04" target="_blank"><i class="fab fa-x-twitter"></i></a>
+          <a href="https://bibekbista.vercel.app/" target="_blank"><i class="fas fa-globe"></i></a>
+        </div>
+      </div>
+      <div class="foot-col reveal">
+        <h5>Navigate</h5>
+        <a href="#features" class="foot-link" data-cmd="cd /features"><i class="fas fa-chevron-right"></i> Features</a>
+        <a href="#install" class="foot-link" data-cmd="cd /install"><i class="fas fa-chevron-right"></i> Installation</a>
+        <a href="#systems" class="foot-link" data-cmd="cd /systems"><i class="fas fa-chevron-right"></i> Compatibility</a>
+        <a href="#changelog" class="foot-link" data-cmd="cat changelog.log"><i class="fas fa-chevron-right"></i> Changelog</a>
+        <a href="#developer" class="foot-link" data-cmd="cat credits.txt"><i class="fas fa-chevron-right"></i> Developer</a>
+      </div>
+      <div class="foot-status reveal">
+        <h5>System Status</h5>
+        <div class="status-widget">
+          <div class="status-row"><span class="pulse"></span><span>All Systems Operational</span></div>
+          <div class="status-meta">
+            <div><span>VERSION</span><b>2.0</b></div>
+            <div><span>BUILD</span><b>2025.01</b></div>
+            <div><span>UPTIME</span><b>99.9%</b></div>
+            <div><span>NODE</span><b>GLOBAL-01</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="foot-cli">
+      <div class="foot-cli-left">
+        <p>© 2025 KriBekHUB · Built by <a href="https://bibekbista.vercel.app/" target="_blank">Bibek Bista</a></p>
+      </div>
+      <a href="#top" class="foot-cli-prompt" data-magnetic id="footPrompt">
+        <span id="promptText">root@kribek:~$</span>
+        <i class="fas fa-terminal"></i>
       </a>
-      <p>An advanced ethical hacking toolkit for webcam & GPS capture via social engineering. Built for security researchers, by security researchers.</p>
     </div>
-    <div class="foot-col">
-      <h5>Navigation</h5>
-      <a href="#features">Features</a>
-      <a href="#install">Installation</a>
-      <a href="#systems">Compatibility</a>
-      <a href="#changelog">Changelog</a>
-    </div>
-    <div class="foot-col">
-      <h5>Connect</h5>
-      <a href="https://github.com/Bibekbista0406/KriBekHUB" target="_blank">GitHub Repository</a>
-      <a href="https://bibekbista.vercel.app/" target="_blank">Developer Portfolio</a>
-      <a href="https://x.com/bibekbista04" target="_blank">Twitter / X</a>
-      <a href="https://www.facebook.com/bibek.bista.7528" target="_blank">Facebook</a>
-    </div>
-  </div>
-  <div class="foot-bottom">
-    <p>© 2025 KriBekHUB · All rights reserved</p>
-    <p>Built with <span class="made">♦</span> by Bibek Bista · <a href="https://bibekbista.vercel.app/" target="_blank" style="color:var(--lime);text-decoration:none">bibekbista.vercel.app</a></p>
   </div>
 </footer>
 
+<button class="back-top" id="backTop" aria-label="Back to top"><i class="fas fa-arrow-up"></i></button>
+
 <script>
-/* ===== Boot Sequence ===== */
-const bootLines = [
-  "Initializing KriBekHUB kernel...",
-  "Loading payload modules [cam, geo, tunnel]...",
-  "Establishing secure tunnel via ngrok...",
-  "Detecting system architecture: x86_64...",
-  "Mounting phishing templates (6 loaded)...",
-  "Cloudflare tunnel: ONLINE",
-  "Cleanup daemon: ARMED",
-  "All systems operational. Welcome."
-];
-const bootLog = document.getElementById('bootLog');
-bootLines.forEach((line,i)=>{
-  const div=document.createElement('div');
-  div.className='ln';
-  div.textContent=line;
-  div.style.animationDelay=(i*0.3)+'s';
-  bootLog.appendChild(div);
-});
-setTimeout(()=>{document.getElementById('boot').classList.add('done');startTerm();},2900);
+/* === Instant Custom Cursor === */
+const cur = document.getElementById('cur');
+const curDot = document.getElementById('curDot');
 
-/* ===== Custom Cursor ===== */
-const cur=document.getElementById('cur'), curDot=document.getElementById('curDot');
-let mx=0,my=0, cx=0,cy=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;curDot.style.transform=`translate(${mx}px,${my}px) translate(-50%,-50%)`});
-function animCur(){cx+=(mx-cx)*0.18;cy+=(my-cy)*0.18;cur.style.transform=`translate(${cx}px,${cy}px) translate(-50%,-50%)`;requestAnimationFrame(animCur)}
-animCur();
-document.querySelectorAll('a,button,.feat-card,.sys-card,.sb-card,.step').forEach(el=>{
-  el.addEventListener('mouseenter',()=>cur.classList.add('hover'));
-  el.addEventListener('mouseleave',()=>cur.classList.remove('hover'));
+document.addEventListener('mousemove', e => {
+  cur.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
+  curDot.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
 });
 
-/* ===== Matrix Canvas ===== */
-const canvas=document.getElementById('matrix'), ctx=canvas.getContext('2d');
-function resize(){canvas.width=innerWidth;canvas.height=innerHeight}
-resize();addEventListener('resize',resize);
-const chars="01アイウエオカキクケコサシスセソタチツテトナニヌネノ<>{}[]/\\$#@*+=KriBekHUB".split('');
-const fontSize=14, cols=Math.floor(innerWidth/fontSize);
-const drops=Array(cols).fill(1);
-function drawMatrix(){
-  ctx.fillStyle='rgba(6,6,9,0.08)';
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-  ctx.font=fontSize+'px JetBrains Mono';
-  for(let i=0;i<drops.length;i++){
-    const text=chars[Math.floor(Math.random()*chars.length)];
-    const x=i*fontSize, y=drops[i]*fontSize;
-    ctx.fillStyle = Math.random()>0.97 ? '#ff2d75' : (Math.random()>0.92 ? '#27e0ff' : '#c8ff1e');
-    ctx.fillText(text,x,y);
-    if(y>canvas.height && Math.random()>0.975) drops[i]=0;
-    drops[i]++;
-  }
+document.querySelectorAll('a, button, .feat-card, .sys-card, .step, .island, .back-top, .dev-minimal, .foot-link').forEach(el => {
+  el.addEventListener('mouseenter', () => cur.classList.add('hover'));
+  el.addEventListener('mouseleave', () => cur.classList.remove('hover'));
+});
+
+/* === Optimized Matrix Canvas === */
+const canvas = document.getElementById('matrix');
+const ctx = canvas.getContext('2d');
+function resize() {
+  canvas.width = innerWidth;
+  canvas.height = innerHeight;
 }
-setInterval(drawMatrix,55);
+resize();
+addEventListener('resize', resize);
 
-/* ===== Hero Terminal Typewriter ===== */
-function startTerm(){
-  const body=document.getElementById('termBody');
-  const lines=[
-    {t:'p',c:'kribek'},
-    {t:'cmd',c:'bash kri.sh'},
-    {t:'out',c:'[+] Initializing KriBekHUB v2.0...'},
-    {t:'out',c:'[+] Selecting payload architecture...'},
-    {t:'ok',c:'[OK] x86_64 detected'},
-    {t:'ok',c:'[OK] Templates loaded: 6'},
-    {t:'out',c:'[*] Starting tunnel (ngrok)...'},
-    {t:'warn',c:'[!] Cloudflare fallback ready'},
-    {t:'ok',c:'[OK] Live URL: https://kribek.ngrok.io'},
-    {t:'out',c:'[*] Waiting for target interaction...'},
-    {t:'cursor',c:''}
+const chars = "01アイウエオカキクケコサシスセソタチツテトナニヌネノ<>{}[]/\\$#@*+=KriBekHUB".split('');
+const fontSize = 14;
+const cols = Math.floor(innerWidth / fontSize);
+const drops = Array(cols).fill(1);
+let lastTime = 0;
+
+function drawMatrix(time) {
+  if (time - lastTime > 33) {
+    ctx.fillStyle = 'rgba(6,6,9,0.08)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.font = fontSize + 'px JetBrains Mono';
+    for (let i = 0; i < drops.length; i++) {
+      const text = chars[Math.floor(Math.random() * chars.length)];
+      const x = i * fontSize, y = drops[i] * fontSize;
+      ctx.fillStyle = Math.random() > 0.97 ? '#ff2d75' : (Math.random() > 0.92 ? '#27e0ff' : '#c8ff1e');
+      ctx.fillText(text, x, y);
+      if (y > canvas.height && Math.random() > 0.975) drops[i] = 0;
+      drops[i]++;
+    }
+    lastTime = time;
+  }
+  requestAnimationFrame(drawMatrix);
+}
+requestAnimationFrame(drawMatrix);
+
+/* === Hero Terminal Typewriter === */
+function startTerm() {
+  const body = document.getElementById('termBody');
+  const lines = [
+    { t: 'p', c: 'kribek' },
+    { t: 'cmd', c: 'bash kri.sh' },
+    { t: 'out', c: '[+] Initializing KriBekHUB v2.0...' },
+    { t: 'out', c: '[+] Selecting payload architecture...' },
+    { t: 'ok', c: '[OK] x86_64 detected' },
+    { t: 'ok', c: '[OK] Templates loaded: 6' },
+    { t: 'out', c: '[*] Starting tunnel (ngrok)...' },
+    { t: 'warn', c: '[!] Cloudflare fallback ready' },
+    { t: 'ok', c: '[OK] Live URL: https://kribek.ngrok.io' },
+    { t: 'out', c: '[*] Waiting for target interaction...' },
+    { t: 'cursor', c: '' }
   ];
-  let li=0,ci=0;
-  function typeNext(){
-    if(li>=lines.length)return;
-    const ln=lines[li];
-    if(ln.t==='cursor'){
-      const d=document.createElement('div');
-      d.innerHTML='<span class="cursor"></span>';
+  let li = 0, ci = 0;
+  function typeNext() {
+    if (li >= lines.length) return;
+    const ln = lines[li];
+    if (ln.t === 'cursor') {
+      const d = document.createElement('div');
+      d.innerHTML = '<span class="cursor"></span>';
       body.appendChild(d);
       return;
     }
-    let el=body.querySelector(`[data-i="${li}"]`);
-    if(!el){
-      el=document.createElement('div');
-      el.dataset.i=li;
-      el.className=ln.t;
-      if(ln.t==='p'){
-        el.innerHTML='<span class="p">kribek</span> <span class="cmd" data-cmd></span>';
+    let el = body.querySelector(`[data-i="${li}"]`);
+    if (!el) {
+      el = document.createElement('div');
+      el.dataset.i = li;
+      el.className = ln.t;
+      if (ln.t === 'p') {
+        el.innerHTML = '<span class="p">kribek</span> <span class="cmd" data-cmd></span>';
         body.appendChild(el);
       } else {
-        el.textContent=ln.c;
+        el.textContent = ln.c;
         body.appendChild(el);
       }
     }
-    if(ln.t==='p'){
-      const cmdEl=el.querySelector('[data-cmd]');
-      cmdEl.textContent=ln.c.slice(0,ci++);
-      if(ci>ln.c.length){li++;ci=0;setTimeout(typeNext,250)}
-      else setTimeout(typeNext,55);
+    if (ln.t === 'p') {
+      const cmdEl = el.querySelector('[data-cmd]');
+      cmdEl.textContent = ln.c.slice(0, ci++);
+      if (ci > ln.c.length) { li++; ci = 0; setTimeout(typeNext, 250); }
+      else setTimeout(typeNext, 55);
     } else {
-      el.style.opacity=0;
-      el.style.transition='opacity .15s';
-      setTimeout(()=>{el.style.opacity=1},20);
-      li++;ci=0;
-      setTimeout(typeNext,200);
+      el.style.opacity = 0;
+      el.style.transition = 'opacity .15s';
+      setTimeout(() => { el.style.opacity = 1; }, 20);
+      li++; ci = 0;
+      setTimeout(typeNext, 200);
     }
   }
   typeNext();
 }
+startTerm();
 
-/* ===== Install Terminal Static ===== */
+/* === Install Terminal === */
 const installCode = [
   '<span class="p">kribek</span> <span class="cmd">git clone https://github.com/Bibekbista0406/KriBekHUB</span>',
   '<span class="out">Cloning into \'KriBekHUB\'...</span>',
@@ -954,82 +632,142 @@ const installCode = [
   '<span class="ok">[OK] Ready. Follow interactive prompts.</span>',
   '<span class="cursor"></span>'
 ];
-setTimeout(()=>{
-  const t=document.getElementById('installTerm');
-  t.innerHTML=installCode.map(l=>l?`<div>${l}</div>`:'<div>&nbsp;</div>').join('');
-},3200);
+setTimeout(() => {
+  const t = document.getElementById('installTerm');
+  t.innerHTML = installCode.map(l => l ? `<div>${l}</div>` : '<div>&nbsp;</div>').join('');
+}, 1200);
 
-function copyCode(){
+function copyCode() {
   navigator.clipboard.writeText('git clone https://github.com/Bibekbista0406/KriBekHUB\ncd KriBekHUB\nbash kri.sh');
-  const b=document.querySelector('.copy-btn');
-  b.innerHTML='<i class="fas fa-check"></i> Copied';
-  setTimeout(()=>b.innerHTML='<i class="fas fa-copy"></i> Copy',1800);
+  const b = document.querySelector('.copy-btn');
+  b.innerHTML = '<i class="fas fa-check"></i> Copied';
+  setTimeout(() => b.innerHTML = '<i class="fas fa-copy"></i> Copy', 1800);
 }
 
-/* ===== Tilt + Glow on Feature Cards ===== */
-document.querySelectorAll('.feat-card').forEach(card=>{
-  card.addEventListener('mousemove',e=>{
-    const r=card.getBoundingClientRect();
-    const x=e.clientX-r.left, y=e.clientY-r.top;
-    const rx=((y/r.height)-.5)*-6;
-    const ry=((x/r.width)-.5)*6;
-    card.style.transform=`perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-4px)`;
-    card.style.setProperty('--mx',x+'px');
-    card.style.setProperty('--my',y+'px');
+/* === Interactive 3D Tilt & Glow on Cards === */
+document.querySelectorAll('.feat-card').forEach(card => {
+  const content = card.querySelector('.feat-content');
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    const x = e.clientX - r.left;
+    const y = e.clientY - r.top;
+    const rx = ((y / r.height) - 0.5) * -8;
+    const ry = ((x / r.width) - 0.5) * 8;
+    card.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-2px)`;
+    card.style.setProperty('--mx', x + 'px');
+    card.style.setProperty('--my', y + 'px');
   });
-  card.addEventListener('mouseleave',()=>{
-    card.style.transform='';
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
   });
 });
 
-/* ===== Reveal on Scroll ===== */
-const io=new IntersectionObserver((entries)=>{
-  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}});
-},{threshold:.12});
-document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+/* === Magnetic Buttons === */
+document.querySelectorAll('[data-magnetic]').forEach(btn => {
+  btn.addEventListener('mousemove', e => {
+    const r = btn.getBoundingClientRect();
+    const x = e.clientX - r.left - r.width / 2;
+    const y = e.clientY - r.top - r.height / 2;
+    btn.style.transform = `translate(${x * 0.2}px, ${y * 0.3}px)`;
+  });
+  btn.addEventListener('mouseleave', () => {
+    btn.style.transform = 'translate(0, 0)';
+  });
+});
 
-/* ===== Counter Animation ===== */
-const counters=document.querySelectorAll('[data-count]');
-const cObs=new IntersectionObserver((entries)=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting){
-      const el=e.target, target=+el.dataset.count;
-      let cur=0;
-      const step=Math.max(1,Math.floor(target/40));
-      const t=setInterval(()=>{
-        cur+=step;
-        if(cur>=target){cur=target;clearInterval(t)}
-        el.textContent=cur;
-      },30);
-      cObs.unobserve(el);
+/* === Hardware Accelerated Scroll Reveal === */
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('in');
+      io.unobserve(e.target);
     }
   });
-},{threshold:.4});
-counters.forEach(c=>cObs.observe(c));
+}, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+document.querySelectorAll('.reveal, .wipe-reveal').forEach(el => io.observe(el));
 
-/* ===== Nav Scroll Active + Mobile Menu ===== */
-const sections=document.querySelectorAll('section[id]');
-const navLinks=document.querySelectorAll('nav a[href^="#"]');
-addEventListener('scroll',()=>{
-  let cur='';
-  sections.forEach(s=>{
-    if(scrollY>=s.offsetTop-120) cur=s.id;
+/* === Interactive Footer Terminal Prompt === */
+const promptText = document.getElementById('promptText');
+const defaultPrompt = 'root@kribek:~$';
+document.querySelectorAll('.foot-link').forEach(link => {
+  link.addEventListener('mouseenter', () => {
+    promptText.textContent = link.getAttribute('data-cmd');
+    promptText.style.color = 'var(--lime)';
   });
-  navLinks.forEach(a=>{
-    a.classList.toggle('active',a.getAttribute('href')==='#'+cur);
+  link.addEventListener('mouseleave', () => {
+    promptText.textContent = defaultPrompt;
+    promptText.style.color = 'var(--cyan)';
   });
 });
 
-const menuBtn=document.getElementById('menuBtn'), nav=document.getElementById('nav');
-menuBtn.addEventListener('click',()=>nav.classList.toggle('open'));
-navLinks.forEach(a=>a.addEventListener('click',()=>nav.classList.remove('open')));
+/* === Optimized Scroll Listener === */
+const island = document.getElementById('island');
+const islandProgress = document.getElementById('islandProgress');
+const navLinks = document.querySelectorAll('.island-link');
+const sections = document.querySelectorAll('section[id]');
+const backTop = document.getElementById('backTop');
+const heroTerm = document.getElementById('heroTerm');
+const footWordmark = document.getElementById('footWordmark');
+let ticking = false;
 
-/* Smooth anchor */
-document.querySelectorAll('a[href^="#"]').forEach(a=>{
-  a.addEventListener('click',e=>{
-    const t=document.querySelector(a.getAttribute('href'));
-    if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'})}
+window.addEventListener('scroll', () => {
+  if (!ticking) {
+    requestAnimationFrame(() => {
+      const sy = window.scrollY;
+      const docH = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = Math.min(100, (sy / docH) * 100);
+      islandProgress.style.width = pct + '%';
+
+      if (sy < 800 && heroTerm) {
+        heroTerm.style.transform = `translateY(${sy * 0.15}px) rotateX(${sy * 0.02}deg)`;
+        heroTerm.style.opacity = Math.max(0, 1 - sy / 700);
+      }
+
+      // Parallax Footer Wordmark
+      if (footWordmark) {
+        const footOffset = (sy - document.body.scrollHeight + window.innerHeight + 400) * 0.3;
+        footWordmark.style.transform = `translateX(-50%) translateY(${footOffset}px)`;
+      }
+
+      let cur = '';
+      sections.forEach(s => {
+        if (sy >= s.offsetTop - 150) cur = s.id;
+      });
+      navLinks.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+      });
+
+      if (sy > 400) backTop.classList.add('show');
+      else backTop.classList.remove('show');
+
+      ticking = false;
+    });
+    ticking = true;
+  }
+});
+
+const islandToggle = document.getElementById('islandToggle');
+islandToggle.addEventListener('click', (e) => {
+  e.stopPropagation();
+  island.classList.toggle('open');
+});
+document.addEventListener('click', (e) => {
+  if (!island.contains(e.target)) island.classList.remove('open');
+});
+
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t) {
+      e.preventDefault();
+      t.scrollIntoView({ behavior: 'smooth' });
+      island.classList.remove('open');
+    }
   });
+});
+
+backTop.addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 </script>
 </body>
