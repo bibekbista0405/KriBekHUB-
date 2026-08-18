@@ -62,7 +62,7 @@ body{
 .vignette{position:fixed;inset:0;z-index:-1;pointer-events:none;
   background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,.6) 100%)}
 
-/* === Dynamic Island Nav === */
+/* === Dynamic Island Nav (Fixed Layout) === */
 .island-wrap{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:1000;will-change:transform}
 .island{
   position:relative;width:220px;height:48px;
@@ -74,32 +74,38 @@ body{
   overflow:hidden;cursor:none;
 }
 .island:hover{width:min(680px,92vw);height:56px;border-color:var(--line-strong)}
+
 .island-left{display:flex;align-items:center;gap:.6rem;flex-shrink:0}
 .island-logo{display:flex;align-items:center;gap:.55rem;text-decoration:none;color:var(--text)}
-.logo-mark{width:30px;height:30px;display:grid;place-items:center;border-radius:8px;background:linear-gradient(135deg,var(--lime),var(--cyan));font-family:'Chakra Petch';font-weight:700;color:var(--void);font-size:.9rem;box-shadow:0 0 16px rgba(200,255,30,.4)}
+.logo-mark{width:30px;height:30px;display:grid;place-items:center;border-radius:8px;background:linear-gradient(135deg,var(--lime),var(--cyan));font-family:'Chakra Petch';font-weight:700;color:var(--void);font-size:.9rem;box-shadow:0 0 16px rgba(200,255,30,.4);flex-shrink:0}
 .logo-text{font-family:'Chakra Petch';font-weight:700;font-size:.95rem;letter-spacing:.15em;color:var(--text);white-space:nowrap;max-width:0;overflow:hidden;transition:max-width 0.3s var(--ease-out),opacity 0.2s;opacity:0}
 .island:hover .logo-text{max-width:120px;opacity:1}
-.island-center{display:flex;gap:2px;flex:1;justify-content:center;align-items:center;opacity:0;pointer-events:none;transition:opacity 0.2s var(--ease-out)}
+
+.island-center{display:flex;gap:2px;flex:1;justify-content:center;align-items:center;opacity:0;pointer-events:none;transition:opacity 0.2s var(--ease-out);white-space:nowrap;overflow:hidden}
 .island:hover .island-center{opacity:1;pointer-events:auto}
-.island-link{color:var(--muted);text-decoration:none;font-size:.75rem;font-family:'JetBrains Mono';padding:.4rem .75rem;border-radius:6px;transition:color 0.2s}
+.island-link{color:var(--muted);text-decoration:none;font-size:.75rem;font-family:'JetBrains Mono';padding:.4rem .75rem;border-radius:6px;transition:color 0.2s;flex-shrink:0}
 .island-link:hover,.island-link.active{color:var(--lime)}
+
 .island-right{display:flex;align-items:center;gap:.5rem;flex-shrink:0;margin-left:auto}
-.island-status{display:flex;align-items:center;gap:.4rem;padding:.3rem .55rem;border-radius:50px;background:rgba(200,255,30,.08);border:1px solid var(--line)}
+.island-status{display:flex;align-items:center;gap:.4rem;padding:.3rem .55rem;border-radius:50px;background:rgba(200,255,30,.08);border:1px solid var(--line);flex-shrink:0}
 .island-status .pulse{width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:var(--glow-lime);animation:pulse 1.6s infinite}
 .island-status .txt{font-family:'JetBrains Mono';font-size:.65rem;color:var(--lime);letter-spacing:.08em}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
-.island-cta{width:30px;height:30px;display:grid;place-items:center;border-radius:8px;background:var(--lime);color:var(--void);text-decoration:none;font-size:.8rem;transition:all 0.2s}
+.island-cta{width:30px;height:30px;display:grid;place-items:center;border-radius:8px;background:var(--lime);color:var(--void);text-decoration:none;font-size:.8rem;transition:all 0.2s;flex-shrink:0}
 .island-cta:hover{transform:scale(1.08);box-shadow:0 0 20px rgba(200,255,30,.7)}
-.island-eq{display:flex;gap:3px;align-items:center;height:18px;margin-left:auto}
+
+/* Removed margin-left:auto here to fix the gap bug */
+.island-eq{display:flex;gap:3px;align-items:center;height:18px;flex-shrink:0}
 .island-eq span{width:3px;background:var(--lime);border-radius:2px;animation:eq .9s ease-in-out infinite}
 .island-eq span:nth-child(1){animation-delay:0s;height:40%}
 .island-eq span:nth-child(2){animation-delay:.15s;height:80%}
 .island-eq span:nth-child(3){animation-delay:.3s;height:50%}
 .island-eq span:nth-child(4){animation-delay:.45s;height:90%}
 @keyframes eq{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1)}}
-.island:hover .island-eq{display:none}
+.island:hover .island-eq{opacity:0;transition:opacity 0.2s}
+
 .island-progress{position:absolute;bottom:0;left:8%;height:2px;width:0;background:linear-gradient(90deg,var(--lime),var(--magenta));border-radius:2px;opacity:.8}
-.island-toggle{display:none;background:none;border:none;color:var(--lime);font-size:1rem;cursor:none;padding:.4rem}
+.island-toggle{display:none;background:none;border:none;color:var(--lime);font-size:1rem;cursor:none;padding:.4rem;flex-shrink:0}
 
 /* === Hero === */
 .hero{min-height:100vh;display:grid;grid-template-columns:1.1fr .9fr;gap:3rem;align-items:center;padding:8rem clamp(1.2rem,4vw,3rem) 4rem;position:relative}
@@ -247,9 +253,9 @@ body{
 .foot-cli-left p{color:var(--muted);font-size:.78rem;font-family:'JetBrains Mono'}
 .foot-cli-left a{color:var(--lime);text-decoration:none;transition:opacity 0.2s}
 .foot-cli-left a:hover{opacity:.8;text-decoration:underline}
-.foot-cli-prompt{font-family:'JetBrains Mono';font-size:.85rem;color:var(--cyan);background:rgba(39,224,255,.05);padding:.5rem 1rem;border:1px solid var(--line);border-radius:6px;cursor:none;transition:all 0.2s}
+.foot-cli-prompt{font-family:'JetBrains Mono';font-size:.85rem;color:var(--cyan);background:rgba(39,224,255,.05);padding:.5rem 1rem;border:1px solid var(--line);border-radius:6px;cursor:none;transition:all 0.2s;display:flex;align-items:center;gap:.5rem}
 .foot-cli-prompt:hover{border-color:var(--cyan);box-shadow:0 0 15px rgba(39,224,255,.2)}
-.foot-cli-prompt i{margin-left:.5rem;transition:transform 0.2s}
+.foot-cli-prompt i{transition:transform 0.2s}
 .foot-cli-prompt:hover i{transform:rotate(-45deg)}
 
 .back-top{position:fixed;bottom:24px;right:24px;width:48px;height:48px;display:grid;place-items:center;border-radius:50%;background:rgba(8,8,14,.85);backdrop-filter:blur(12px);border:1px solid var(--line-strong);color:var(--lime);font-size:1rem;cursor:none;opacity:0;pointer-events:none;transition:all 0.3s var(--ease-out);z-index:999;box-shadow:0 8px 24px rgba(0,0,0,.5)}
@@ -267,6 +273,7 @@ body{
   .install-wrap{grid-template-columns:1fr}
   .foot-grid{grid-template-columns:1fr 1fr}
   .island-toggle{display:block}
+  .island-eq{display:none}
   .island-center{position:absolute;top:100%;left:50%;transform:translateX(-50%) translateY(-4px);width:max-content;background:rgba(8,8,14,.95);padding:.5rem;border-radius:30px;margin-top:8px;flex-direction:column;gap:.2rem;opacity:0;pointer-events:none}
   .island.open .island-center{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
 }
@@ -646,7 +653,6 @@ function copyCode() {
 
 /* === Interactive 3D Tilt & Glow on Cards === */
 document.querySelectorAll('.feat-card').forEach(card => {
-  const content = card.querySelector('.feat-content');
   card.addEventListener('mousemove', e => {
     const r = card.getBoundingClientRect();
     const x = e.clientX - r.left;
@@ -662,13 +668,14 @@ document.querySelectorAll('.feat-card').forEach(card => {
   });
 });
 
-/* === Magnetic Buttons === */
+/* === Magnetic Buttons (Fixed hover lift conflict) === */
 document.querySelectorAll('[data-magnetic]').forEach(btn => {
   btn.addEventListener('mousemove', e => {
     const r = btn.getBoundingClientRect();
     const x = e.clientX - r.left - r.width / 2;
     const y = e.clientY - r.top - r.height / 2;
-    btn.style.transform = `translate(${x * 0.2}px, ${y * 0.3}px)`;
+    // Added -2px to Y to maintain the CSS hover lift effect
+    btn.style.transform = `translate(${x * 0.2}px, ${y * 0.3 - 2}px)`;
   });
   btn.addEventListener('mouseleave', () => {
     btn.style.transform = 'translate(0, 0)';
@@ -723,9 +730,10 @@ window.addEventListener('scroll', () => {
         heroTerm.style.opacity = Math.max(0, 1 - sy / 700);
       }
 
-      // Parallax Footer Wordmark
+      // Parallax Footer Wordmark (Clamped for safety)
       if (footWordmark) {
-        const footOffset = (sy - document.body.scrollHeight + window.innerHeight + 400) * 0.3;
+        let footOffset = (sy - (document.body.scrollHeight - window.innerHeight) + 400) * 0.3;
+        footOffset = Math.max(-100, Math.min(100, footOffset));
         footWordmark.style.transform = `translateX(-50%) translateY(${footOffset}px)`;
       }
 
