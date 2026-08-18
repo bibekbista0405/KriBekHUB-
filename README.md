@@ -2,11 +2,11 @@
 **Advanced Social Engineering Toolkit for Ethical Security Research**  
 
 <p align="center">
-  <a href="https://bibekbista0406.github.io/KriBekHUB/" target="_blank">
+  <a href="https://bibekbista0405.github.io/KriBekHUB-/" target="_blank">
     <img src="https://raw.githubusercontent.com/Bibekbista0406/KriBekHUB/main/assets/logo.png" width="220" style="border-radius:12px;filter:drop-shadow(0 0 15px #00ffcc)">
   </a>
   <br>
-  <a href="https://bibekbista0406.github.io/KriBekHUB/" target="_blank">
+  <a href="https://bibekbista0405.github.io/KriBekHUB-//" target="_blank">
     <img src="https://img.shields.io/badge/OFFICIAL_WEBSITE-00ffcc?style=for-the-badge&logo=vercel&logoColor=white">
   </a>
   <br>
@@ -20,9 +20,9 @@
 ## 🌐 Official Website
 For complete documentation, live demos, and tutorials, visit our official website:  
 
-🔗 **[https://bibekbista0406.github.io/KriBekHUB/](https://bibekbista0406.github.io/KriBekHUB/)**  
+🔗 **[https://bibekbista0405.github.io/KriBekHUB-/](https://bibekbista0405.github.io/KriBekHUB-/)**  
 
-[![Website Preview](https://img.shields.io/badge/WEBSITE_PREVIEW-00ffcc?style=for-the-badge)](https://bibekbista0406.github.io/KriBekHUB/)
+[![Website Preview](https://img.shields.io/badge/WEBSITE_PREVIEW-00ffcc?style=for-the-badge)](https://bibekbista0405.github.io/KriBekHUB-/)
 
 ---
 ## ✨ Key Features
