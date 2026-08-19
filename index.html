@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>KriBekHUB v2.0 — Ethical Hacking Toolkit</title>
+<title>OB-Camtest v2.0 — Ethical Hacking Toolkit</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -62,10 +62,10 @@ body{
 .vignette{position:fixed;inset:0;z-index:-1;pointer-events:none;
   background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,.6) 100%)}
 
-/* === Dynamic Island Nav (Fixed Layout) === */
+/* === Dynamic Island Nav === */
 .island-wrap{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:1000;will-change:transform}
 .island{
-  position:relative;width:220px;height:48px;
+  position:relative;width:240px;height:48px;
   background:rgba(8,8,14,.9);backdrop-filter:blur(20px) saturate(180%);
   border:1px solid var(--line);border-radius:30px;
   display:flex;align-items:center;padding:0 12px;
@@ -79,7 +79,7 @@ body{
 .island-logo{display:flex;align-items:center;gap:.55rem;text-decoration:none;color:var(--text)}
 .logo-mark{width:30px;height:30px;display:grid;place-items:center;border-radius:8px;background:linear-gradient(135deg,var(--lime),var(--cyan));font-family:'Chakra Petch';font-weight:700;color:var(--void);font-size:.9rem;box-shadow:0 0 16px rgba(200,255,30,.4);flex-shrink:0}
 .logo-text{font-family:'Chakra Petch';font-weight:700;font-size:.95rem;letter-spacing:.15em;color:var(--text);white-space:nowrap;max-width:0;overflow:hidden;transition:max-width 0.3s var(--ease-out),opacity 0.2s;opacity:0}
-.island:hover .logo-text{max-width:120px;opacity:1}
+.island:hover .logo-text{max-width:150px;opacity:1}
 
 .island-center{display:flex;gap:2px;flex:1;justify-content:center;align-items:center;opacity:0;pointer-events:none;transition:opacity 0.2s var(--ease-out);white-space:nowrap;overflow:hidden}
 .island:hover .island-center{opacity:1;pointer-events:auto}
@@ -94,7 +94,6 @@ body{
 .island-cta{width:30px;height:30px;display:grid;place-items:center;border-radius:8px;background:var(--lime);color:var(--void);text-decoration:none;font-size:.8rem;transition:all 0.2s;flex-shrink:0}
 .island-cta:hover{transform:scale(1.08);box-shadow:0 0 20px rgba(200,255,30,.7)}
 
-/* Removed margin-left:auto here to fix the gap bug */
 .island-eq{display:flex;gap:3px;align-items:center;height:18px;flex-shrink:0}
 .island-eq span{width:3px;background:var(--lime);border-radius:2px;animation:eq .9s ease-in-out infinite}
 .island-eq span:nth-child(1){animation-delay:0s;height:40%}
@@ -228,7 +227,7 @@ body{
 .foot-content{max-width:1200px;margin:0 auto;padding:4rem clamp(1.2rem,4vw,3rem) 2rem;position:relative;z-index:2}
 .foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1.2fr;gap:2.5rem;margin-bottom:3rem}
 
-.foot-brand .logo-text{font-size:1.1rem;max-width:120px;opacity:1}
+.foot-brand .logo-text{font-size:1.1rem;max-width:150px;opacity:1}
 .foot-brand p{color:var(--muted);font-size:.85rem;margin-top:.8rem;max-width:300px}
 .foot-socials{display:flex;gap:.6rem;margin-top:1.2rem}
 .foot-socials a{width:38px;height:38px;display:grid;place-items:center;border:1px solid var(--line);border-radius:8px;color:var(--muted);transition:all 0.2s;text-decoration:none;background:rgba(255,255,255,.02)}
@@ -282,7 +281,7 @@ body{
   .cur,.cur-dot{display:none}
   .btn,.nav-cta,.sys-card,.copy-btn,.portfolio-link,.back-top,.island,.island-toggle,.foot-cli-prompt{cursor:pointer}
   .foot-grid{grid-template-columns:1fr}
-  .island{width:200px}.island:hover{width:200px}
+  .island{width:220px}.island:hover{width:220px}
 }
 </style>
 </head>
@@ -300,8 +299,8 @@ body{
   <nav class="island" id="island">
     <div class="island-left">
       <a href="#" class="island-logo">
-        <span class="logo-mark">K</span>
-        <span class="logo-text">KriBekHUB</span>
+        <span class="logo-mark">O</span>
+        <span class="logo-text">OB-Camtest</span>
       </a>
     </div>
     <div class="island-center" id="islandCenter">
@@ -338,7 +337,7 @@ body{
       Secure the <span class="glitch" data-text="Frame">Frame</span>.
     </h1>
     <p class="lead reveal">
-      KriBekHUB is an advanced ethical hacking toolkit engineered for
+      OB-Camtest is an advanced ethical hacking toolkit engineered for
       <b>webcam & GPS capture</b> via social engineering. Built for
       <b>authorized penetration testers</b> and security researchers.
     </p>
@@ -351,7 +350,7 @@ body{
   <div class="terminal reveal" id="heroTerm">
     <div class="term-bar">
       <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-      <span class="ttl">root@kribek: ~</span>
+      <span class="ttl">root@ob-camtest: ~</span>
     </div>
     <div class="term-body" id="termBody"></div>
   </div>
@@ -383,8 +382,8 @@ body{
   <div class="install-wrap">
     <div class="install-steps reveal">
       <div class="step"><div class="step-n">01</div><div><h4>Clone Repository</h4><p>Pull the latest source from GitHub using <code>git clone</code>.</p></div></div>
-      <div class="step"><div class="step-n">02</div><div><h4>Enter Directory</h4><p>Navigate into the project folder with <code>cd KriBekHUB</code>.</p></div></div>
-      <div class="step"><div class="step-n">03</div><div><h4>Execute Toolkit</h4><p>Launch the main script with <code>bash kri.sh</code> and follow prompts.</p></div></div>
+      <div class="step"><div class="step-n">02</div><div><h4>Enter Directory</h4><p>Navigate into the project folder with <code>cd OB-Camtest</code>.</p></div></div>
+      <div class="step"><div class="step-n">03</div><div><h4>Execute Toolkit</h4><p>Launch the main script with <code>bash camtest.sh</code> and follow prompts.</p></div></div>
       <div class="step"><div class="step-n">04</div><div><h4>Cleanup Traces</h4><p>When finished, run <code>bash clean.sh</code> to wipe all artifacts.</p></div></div>
     </div>
     <div class="term-install reveal">
@@ -460,22 +459,22 @@ body{
   </div>
   <div class="disclaim reveal">
     <h4><i class="fas fa-triangle-exclamation"></i> Legal Disclaimer</h4>
-    <p><strong>WARNING:</strong> KriBekHUB is developed strictly for <strong>educational purposes</strong> and <strong>authorized penetration testing</strong>. Unauthorized use of this tool against systems you do not own or have explicit written permission to test is <strong>illegal</strong>.</p>
-    <p>The developer assumes no liability and is not responsible for any misuse or damage caused by this tool. By downloading, cloning, or executing KriBekHUB, you accept full responsibility for your actions and agree to use it <strong>legally and ethically</strong>.</p>
+    <p><strong>WARNING:</strong> OB-Camtest is developed strictly for <strong>educational purposes</strong> and <strong>authorized penetration testing</strong>. Unauthorized use of this tool against systems you do not own or have explicit written permission to test is <strong>illegal</strong>.</p>
+    <p>The developer assumes no liability and is not responsible for any misuse or damage caused by this tool. By downloading, cloning, or executing OB-Camtest, you accept full responsibility for your actions and agree to use it <strong>legally and ethically</strong>.</p>
   </div>
 </section>
 
 <!-- Creative Command Deck Footer -->
 <footer class="cyber-footer">
   <div class="foot-glow"></div>
-  <div class="foot-wordmark" id="footWordmark">KRIBEKHUB</div>
+  <div class="foot-wordmark" id="footWordmark">OB-CAMTEST</div>
   
   <div class="foot-content">
     <div class="foot-grid">
       <div class="foot-brand reveal">
         <a href="#" class="island-logo">
-          <span class="logo-mark">K</span>
-          <span class="logo-text" style="max-width:120px;opacity:1">KriBekHUB</span>
+          <span class="logo-mark">O</span>
+          <span class="logo-text" style="max-width:150px;opacity:1">OB-Camtest</span>
         </a>
         <p>An advanced ethical hacking toolkit for webcam & GPS capture via social engineering. Built for security researchers, by security researchers.</p>
         <div class="foot-socials">
@@ -508,10 +507,10 @@ body{
     
     <div class="foot-cli">
       <div class="foot-cli-left">
-        <p>© 2025 KriBekHUB · Built by <a href="https://bibekbista.vercel.app/" target="_blank">Bibek Bista</a></p>
+        <p>© 2025 OB-Camtest · Built by <a href="https://bibekbista.vercel.app/" target="_blank">Bibek Bista</a></p>
       </div>
       <a href="#top" class="foot-cli-prompt" data-magnetic id="footPrompt">
-        <span id="promptText">root@kribek:~$</span>
+        <span id="promptText">root@ob-camtest:~$</span>
         <i class="fas fa-terminal"></i>
       </a>
     </div>
@@ -545,7 +544,7 @@ function resize() {
 resize();
 addEventListener('resize', resize);
 
-const chars = "01アイウエオカキクケコサシスセソタチツテトナニヌネノ<>{}[]/\\$#@*+=KriBekHUB".split('');
+const chars = "01アイウエオカキクケコサシスセソタチツテトナニヌネノ<>{}[]/\\$#@*+=OB-Camtest".split('');
 const fontSize = 14;
 const cols = Math.floor(innerWidth / fontSize);
 const drops = Array(cols).fill(1);
@@ -574,15 +573,15 @@ requestAnimationFrame(drawMatrix);
 function startTerm() {
   const body = document.getElementById('termBody');
   const lines = [
-    { t: 'p', c: 'kribek' },
-    { t: 'cmd', c: 'bash kri.sh' },
-    { t: 'out', c: '[+] Initializing KriBekHUB v2.0...' },
+    { t: 'p', c: 'ob-camtest' },
+    { t: 'cmd', c: 'bash camtest.sh' },
+    { t: 'out', c: '[+] Initializing OB-Camtest v2.0...' },
     { t: 'out', c: '[+] Selecting payload architecture...' },
     { t: 'ok', c: '[OK] x86_64 detected' },
     { t: 'ok', c: '[OK] Templates loaded: 6' },
     { t: 'out', c: '[*] Starting tunnel (ngrok)...' },
     { t: 'warn', c: '[!] Cloudflare fallback ready' },
-    { t: 'ok', c: '[OK] Live URL: https://kribek.ngrok.io' },
+    { t: 'ok', c: '[OK] Live URL: https://ob-camtest.ngrok.io' },
     { t: 'out', c: '[*] Waiting for target interaction...' },
     { t: 'cursor', c: '' }
   ];
@@ -602,7 +601,7 @@ function startTerm() {
       el.dataset.i = li;
       el.className = ln.t;
       if (ln.t === 'p') {
-        el.innerHTML = '<span class="p">kribek</span> <span class="cmd" data-cmd></span>';
+        el.innerHTML = '<span class="p">ob-camtest</span> <span class="cmd" data-cmd></span>';
         body.appendChild(el);
       } else {
         el.textContent = ln.c;
@@ -628,14 +627,14 @@ startTerm();
 
 /* === Install Terminal === */
 const installCode = [
-  '<span class="p">kribek</span> <span class="cmd">git clone https://github.com/Bibekbista0406/KriBekHUB</span>',
-  '<span class="out">Cloning into \'KriBekHUB\'...</span>',
+  '<span class="p">ob-camtest</span> <span class="cmd">git clone https://github.com/Bibekbista0406/KriBekHUB</span>',
+  '<span class="out">Cloning into \'OB-Camtest\'...</span>',
   '<span class="ok">[OK] Repository cloned successfully</span>',
   '',
-  '<span class="p">kribek</span> <span class="cmd">cd KriBekHUB</span>',
+  '<span class="p">ob-camtest</span> <span class="cmd">cd OB-Camtest</span>',
   '',
-  '<span class="p">kribek</span> <span class="cmd">bash kri.sh</span>',
-  '<span class="out">[*] Launching KriBekHUB v2.0...</span>',
+  '<span class="p">ob-camtest</span> <span class="cmd">bash camtest.sh</span>',
+  '<span class="out">[*] Launching OB-Camtest v2.0...</span>',
   '<span class="ok">[OK] Ready. Follow interactive prompts.</span>',
   '<span class="cursor"></span>'
 ];
@@ -645,7 +644,8 @@ setTimeout(() => {
 }, 1200);
 
 function copyCode() {
-  navigator.clipboard.writeText('git clone https://github.com/Bibekbista0406/KriBekHUB\ncd KriBekHUB\nbash kri.sh');
+  // NOTE: Kept the actual GitHub URL intact so it points to the correct repo
+  navigator.clipboard.writeText('git clone https://github.com/Bibekbista0406/KriBekHUB\ncd OB-Camtest\nbash camtest.sh');
   const b = document.querySelector('.copy-btn');
   b.innerHTML = '<i class="fas fa-check"></i> Copied';
   setTimeout(() => b.innerHTML = '<i class="fas fa-copy"></i> Copy', 1800);
@@ -668,13 +668,12 @@ document.querySelectorAll('.feat-card').forEach(card => {
   });
 });
 
-/* === Magnetic Buttons (Fixed hover lift conflict) === */
+/* === Magnetic Buttons === */
 document.querySelectorAll('[data-magnetic]').forEach(btn => {
   btn.addEventListener('mousemove', e => {
     const r = btn.getBoundingClientRect();
     const x = e.clientX - r.left - r.width / 2;
     const y = e.clientY - r.top - r.height / 2;
-    // Added -2px to Y to maintain the CSS hover lift effect
     btn.style.transform = `translate(${x * 0.2}px, ${y * 0.3 - 2}px)`;
   });
   btn.addEventListener('mouseleave', () => {
@@ -695,7 +694,7 @@ document.querySelectorAll('.reveal, .wipe-reveal').forEach(el => io.observe(el))
 
 /* === Interactive Footer Terminal Prompt === */
 const promptText = document.getElementById('promptText');
-const defaultPrompt = 'root@kribek:~$';
+const defaultPrompt = 'root@ob-camtest:~$';
 document.querySelectorAll('.foot-link').forEach(link => {
   link.addEventListener('mouseenter', () => {
     promptText.textContent = link.getAttribute('data-cmd');
@@ -730,7 +729,6 @@ window.addEventListener('scroll', () => {
         heroTerm.style.opacity = Math.max(0, 1 - sy / 700);
       }
 
-      // Parallax Footer Wordmark (Clamped for safety)
       if (footWordmark) {
         let footOffset = (sy - (document.body.scrollHeight - window.innerHeight) + 400) * 0.3;
         footOffset = Math.max(-100, Math.min(100, footOffset));
